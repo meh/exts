@@ -240,7 +240,7 @@ defmodule Exts do
   end
 
   def select(table, match_spec) do
-    Selection.new(:ets.select_reverse(table, match_spec))
+    Selection.new(:ets.select(table, match_spec))
   end
 
   def select(table, limit, match_spec) when is_integer limit do
@@ -252,7 +252,7 @@ defmodule Exts do
   end
 
   def reverse_select(table, limit, match_spec) do
-    Selection.new(:ets.select(table, match_spec, limit), false)
+    Selection.new(:ets.select_reverse(table, match_spec, limit), false)
   end
 
   defmodule Match do
