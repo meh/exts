@@ -220,9 +220,7 @@ defimpl Access, for: Exts.Dict do
 end
 
 defimpl Binary.Inspect, for: Exts.Dict do
-  import Kernel, except: [inspect: 2]
-
   def inspect(dict, opts) do
-    "#Exts.Dict<" <> Binary.Inspect.inspect(Exts.Dict.to_list(dict), opts) <> ">"
+    "#Exts.Dict<" <> Kernel.inspect(Exts.Dict.to_list(dict), opts) <> ">"
   end
 end
