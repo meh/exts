@@ -121,11 +121,6 @@ defmodule Exts.Table do
     Exts.info(id, key)
   end
 
-  @spec size(t) :: integer
-  def size(table(id: id)) do
-    Exts.info(id, :size)
-  end
-
   @spec to_list(t) :: [record]
   def to_list(table(id: id)) do
     Exts.to_list(id)
@@ -277,6 +272,6 @@ defimpl Enum.Iterator, for: Exts.Table do
   end
 
   def count(self) do
-    self.size
+    self.count
   end
 end
