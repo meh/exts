@@ -211,19 +211,11 @@ defmodule Exts.Table do
   end
 
   def iterator(self) do
-    Exts.Table.Iterator[table: self, safe: true, reverse: false]
-  end
-
-  def iterator!(self) do
-    Exts.Table.Iterator[table: self, safe: false, reverse: false]
+    Exts.Table.Iterator.new(self, reverse: false)
   end
 
   def reverse_iterator(self) do
-    Exts.Table.Iterator[table: self, safe: true, reverse: true]
-  end
-
-  def reverse_iterator!(self) do
-    Exts.Table.Iterator[table: self, safe: false, reverse: true]
+    Exts.Table.Iterator.new(self, reverse: true)
   end
 
   @spec delete(any, t) :: true
