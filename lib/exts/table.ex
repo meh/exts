@@ -82,8 +82,18 @@ defmodule Exts.Table do
     end
   end
 
-  def unprotect(table(id: id)) do
-    Exts.unprotect(id)
+  @spec protect(function, t) :: any
+  def protect(fun, table(id: id) = self) do
+    :ets.safe_fixtable(id, true)
+
+    try do
+      cond do
+        is_function(fun, 0) -> fun.()
+        is_function(fun, 1) -> fun.(self)
+      end
+    after
+      :ets.safe_fixtable
+    end
   end
 
   @spec bag?(t) :: boolean
