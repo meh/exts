@@ -275,3 +275,9 @@ defimpl Enum.Iterator, for: Exts.Table do
     self.count
   end
 end
+
+defimpl Binary.Inspect, for: Exts.Table do
+  def inspect(self, _opts) do
+    "#Exts.Table<#{self.id}>"
+  end
+end
