@@ -9,7 +9,7 @@
 defmodule Exts do
   defexception FileError, reason: nil do
     def message(self) do
-      reason
+      self.reason
     end
   end
 
