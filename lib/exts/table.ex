@@ -213,7 +213,7 @@ defmodule Exts.Table do
 
   @spec match(integer, any, Keyword.t, t) :: Match.t | nil
   def match(limit, pattern, options, table(id: id)) do
-    Exts.match(id, limmit patterb, options)
+    Exts.match(id, limit, pattern, options)
   end
 
   def count(table(id: id)) do
