@@ -317,7 +317,7 @@ defmodule Exts do
 
   @spec count(table) :: non_neg_integer
   def count(table) do
-    size(table)
+    info(table, :size)
   end
 
   @spec count(table, any) :: non_neg_integer
