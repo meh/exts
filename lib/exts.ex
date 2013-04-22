@@ -299,7 +299,7 @@ defmodule Exts do
 
   @spec match(table, any | integer, Keyword.t | any) :: Match.t | nil
   def match(table, pattern, delete: true) do
-    Match.new(:ets.match_delete(table, pattern))
+    :ets.match_delete(table, pattern)
   end
 
   def match(table, pattern, whole: true) do
