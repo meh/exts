@@ -44,23 +44,42 @@ defmodule Exts.Table do
   @spec load(String.t, Keyword.t) :: { :ok, t } | { :error, any }
   def load(path, options // []) do
     case :ets.file2tab(path, options) do
-      { :ok, id }        -> { :ok, new(id) }
-      { :error, reason } -> { :error, reason }
+      { :ok, id } ->
+        { :ok, new(id) }
+
+      { :error, reason } ->
+        { :error, reason }
+    end
+  end
+
+  @spec load!(String.t)            :: t | no_return
+  @spec load!(String.t, Keyword.t) :: t | no_return
+  def load!(path, options // []) do
+    case :ets.file2tab(path, options) do
+      { :ok, id } ->
+        new(id)
+
+      { :error, reason } ->
+        raise Exts.FileError, reason: reason
     end
   end
 
   @spec dump(String.t, t) :: :ok | { :error, any }
-  def dump(path, table(id: id)) do
-    :ets.tab2file(id, path)
-  end
-
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
-  def dump(path, options, table(id: id)) do
+  def dump(path, options // [], table(id: id)) do
     :ets.tab2file(id, path, options)
   end
 
-  def protect(table(id: id)) do
-    Exts.protect(id)
+  @spec dump!(String.t, t) :: :ok | no_return
+  @spec dump!(String.t, Keyword.t, t) :: :ok | no_return
+  def dump!(path, options // [], table(id: id)) do
+    case :ets.tab2file(id, path) do
+      :ok ->
+        :ok
+
+      { :error, reason } ->
+        raise Exts.FileError, reason: reason
+    end
   end
 
   def unprotect(table(id: id)) do

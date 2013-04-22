@@ -7,11 +7,9 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts do
-  @doc false
-  defmacro __using__(_opts) do
-    quote do
-      require Exts
-      require Exts.Table
+  defexception FileError, reason: nil do
+    def message(self) do
+      reason
     end
   end
 
@@ -23,10 +21,34 @@ defmodule Exts do
     :ets.file2tab(path, options)
   end
 
+  @spec load!(String.t) :: table | no_return
+  @spec load!(String.t, Keyword.t) :: table | no_return
+  def load!(path, options // []) do
+    case :ets.file2tab(path, options) do
+      { :ok, table } ->
+        table
+
+      { :error, reason } ->
+        raise FileError, reason: reason
+    end
+  end
+
   @spec dump(table, String.t) :: :ok | { :error, any }
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
   def dump(table, path, options // []) do
     :ets.tab2file(table, path, options)
+  end
+
+  @spec dump!(table, String.t) :: :ok | no_return
+  @spec dump!(table, String.t, Keyword.t) :: :ok | no_return
+  def dump!(table, path, options // []) do
+    case :ets.tab2file(table, path, options) do
+      :ok ->
+        :ok
+
+      { :error, reason } ->
+        raise FileError, reason: reason
+    end
   end
 
   @spec info(String.t | table) :: { :ok, any } | { :error, any } | Keyword.t | nil
