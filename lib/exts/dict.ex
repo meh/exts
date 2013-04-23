@@ -115,7 +115,7 @@ defmodule Exts.Dict do
   Returns the dict size.
   """
   def size(dict(table: table)) do
-    table.size
+    table.count
   end
 
   @doc """
