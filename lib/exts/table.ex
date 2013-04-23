@@ -9,7 +9,7 @@
 defmodule Exts.Table do
   @opaque t :: { Exts.Table, Exts.table, :bag | :duplicate_bag | :set | :oredered_set }
 
-  defrecordp :table, id: nil, type: nil
+  defrecordp :table, id: nil, type: nil, resource: nil
 
   @spec new :: t
   def new do
@@ -18,7 +18,16 @@ defmodule Exts.Table do
 
   @spec new(integer | atom | Keyword.t) :: t
   def new(options) when is_list options do
-    table(id: Exts.new(options), type: options[:type] || :set)
+    if options[:automatic] != false do
+      id       = Exts.new(Keyword.put(options, :heir, pid: Process.whereis(Exts.Manager)))
+      resource = if options[:automatic] != false do
+        :resource.notify_when_destroyed(Process.whereis(Exts.Manager), { :destroy, id })
+      end
+
+      table(id: id, type: options[:type] || :set, resource: resource)
+    else
+      table(id: Exts.new(options), type: options[:type] || :set)
+    end
   end
 
   def new(id) do
