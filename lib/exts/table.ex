@@ -85,7 +85,7 @@ defmodule Exts.Table do
   @spec dump!(String.t, t) :: :ok | no_return
   @spec dump!(String.t, Keyword.t, t) :: :ok | no_return
   def dump!(path, options // [], table(id: id)) do
-    case :ets.tab2file(id, path) do
+    case :ets.tab2file(id, path, options) do
       :ok ->
         :ok
 
