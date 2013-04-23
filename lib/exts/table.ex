@@ -19,7 +19,10 @@ defmodule Exts.Table do
   @spec new(integer | atom | Keyword.t) :: t
   def new(options) when is_list options do
     if options[:automatic] != false do
-      id       = Exts.new(Keyword.put(options, :heir, pid: Process.whereis(Exts.Manager)))
+      options = Keyword.put(options, :heir, pid: Process.whereis(Exts.Manager))
+      options = Keyword.put(options, :access, :public)
+
+      id       = Exts.new(options)
       resource = if options[:automatic] != false do
         :resource.notify_when_destroyed(Process.whereis(Exts.Manager), { :destroy, id })
       end
