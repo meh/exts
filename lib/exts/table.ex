@@ -24,7 +24,7 @@ defmodule Exts.Table do
 
       id       = Exts.new(options)
       resource = if options[:automatic] != false do
-        :resource.notify_when_destroyed(Process.whereis(Exts.Manager), { :destroy, id })
+        Finalizer.define({ :destroy, id }, Process.whereis(Exts.Manager))
       end
 
       table(id: id, type: options[:type] || :set, resource: resource)
