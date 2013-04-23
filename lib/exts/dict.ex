@@ -20,42 +20,8 @@ defmodule Exts.Dict do
   Create a new empty dict.
   """
   @spec new :: Dict.t
-  def new do
-    dict(table: Exts.Table.new)
-  end
-
-  @doc """
-  Creates a new dict from the given enumerable.
-
-  ## Examples
-
-      Exts.Dict.new [{:b,1},{:a,2}]
-      #=> #Exts.Dict<[a: 2, b: 1]>
-
-  """
-  @spec new(list({ key :: term, value :: term })) :: Dict.t
-  def new(pairs) do
-    Enum.reduce pairs, new, fn { k, v }, dict ->
-      put(dict, k, v)
-    end
-  end
-
-  @doc """
-  Creates a new dict from the enumerable with the help of the transformation
-  function.
-
-  ## Examples
-
-      Exts.Dict.new ["a", "b"], fn x -> {x, x} end
-      #=> #Exts.Dict<[{"a","a"},{"b","b"}]>
-
-  """
-  @spec new(list, (term -> { key :: term, value ::term })) :: Dict.t
-  def new(list, transform) when is_function(transform, 1) do
-    Enum.reduce list, new, fn i, dict ->
-      { k, v } = transform.(i)
-      put dict, k, v
-    end
+  def new(options // []) do
+    dict(table: Exts.Table.new(options))
   end
 
   @doc """
