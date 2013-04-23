@@ -7,6 +7,7 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts.Manager do
+  use Application.Behaviour
   use GenServer.Behaviour
 
   def start(_, _) do
@@ -21,6 +22,10 @@ defmodule Exts.Manager do
         r -> r
       end
     end
+  end
+
+  def stop(_) do
+    Process.exit(Process.whereis(__MODULE__), "application stopped")
   end
 
   def handle_call({ :own, id, pid }, state) do
