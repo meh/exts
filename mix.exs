@@ -9,7 +9,8 @@ defmodule Exts.Mixfile do
 
   # Configuration for the OTP application
   def application do
-    [ mod: { Exts.Manager, [] } ]
+    [ applications: [:finalizer],
+      mod: { Exts.Manager, [] } ]
   end
 
   # Returns the list of dependencies in the format:
