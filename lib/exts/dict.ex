@@ -66,7 +66,7 @@ defmodule Exts.Dict do
   """
   def update(dict(table: table) = self, key, value, fun) when is_function(fun, 1) do
     table.write({ key, value }, overwrite: false)
-    table.write({ key, fun.(hd(table.read(key))) })
+    table.write({ key, fun.(elem table.read(key), 1) })
 
     self
   end
