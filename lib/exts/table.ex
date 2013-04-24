@@ -255,8 +255,8 @@ defmodule Exts.Table do
   end
 
   @spec delete(any, t) :: true
-  def delete(key, table(id: id)) do
-    Exts.delete(id, key)
+  def delete(key_or_pattern, table(id: id)) do
+    Exts.delete(id, key_or_pattern)
   end
 
   @spec delete!(record, t) :: true
