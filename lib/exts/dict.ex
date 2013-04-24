@@ -136,14 +136,20 @@ defmodule Exts.Dict do
   Get all keys in the dict.
   """
   def keys(dict(table: table)) do
-    table.select([{{ :'$1', :'$2' }, [], [:'$1'] }]) || []
+    case table.select([{{ :'$1', :'$2' }, [], [:'$1'] }]) do
+      nil -> []
+      s   -> s.values
+    end
   end
 
   @doc """
   Get all values in the dict.
   """
   def values(dict(table: table)) do
-    table.select([{{ :'$1', :'$2' }, [], [:'$2'] }]) || []
+    case table.select([{{ :'$1', :'$2' }, [], [:'$2'] }]) do
+      nil -> []
+      s   -> s.values
+    end
   end
 
   @doc """
