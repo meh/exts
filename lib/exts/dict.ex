@@ -49,12 +49,12 @@ defmodule Exts.Dict do
   Raises if the key does not exist in the dictionary.
   """
   def update(dict(table: table) = self, key, fun) when is_function(fun, 1) do
-    case table.read(key) do
-      [v] ->
-        table.write({ key, fun.(v) })
+    if table.contains?(key) do
+      { ^key, value } = table.read(key)
 
-      [] ->
-        raise KeyError, key: key
+      table.write({ key, fun.(value) })
+    else
+      raise KeyError, key: key
     end
 
     self
