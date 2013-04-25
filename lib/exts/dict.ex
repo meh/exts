@@ -50,7 +50,7 @@ defmodule Exts.Dict do
   """
   def update(dict(table: table) = self, key, fun) when is_function(fun, 1) do
     if table.contains?(key) do
-      { ^key, value } = table.read(key)
+      { _, value } = table.read(key)
 
       table.write({ key, fun.(value) })
     else
@@ -76,8 +76,8 @@ defmodule Exts.Dict do
   """
   def get(dict(table: table), key, default // nil) do
     case table.read(key) do
-      { ^key, value } -> value
-      nil             -> default
+      { _, value } -> value
+      nil          -> default
     end
   end
 
@@ -87,8 +87,8 @@ defmodule Exts.Dict do
   """
   def get!(dict(table: table), key) do
     case table.read(key) do
-      { ^key, value } -> value
-      nil             -> raise KeyError, key: key
+      { _, value } -> value
+      nil          -> raise KeyError, key: key
     end
   end
 
