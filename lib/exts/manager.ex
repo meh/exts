@@ -48,7 +48,7 @@ defmodule Exts.Manager do
   end
 
   @doc """
-  Handle the finalization.
+  Handle the finalization and table transfer.
   """
   def handle_info({ :destroy, table }, state) do
     :ets.delete(table)
@@ -56,9 +56,6 @@ defmodule Exts.Manager do
     { :noreply, List.delete(state, table) }
   end
 
-  @doc """
-  Handle a table transfer.
-  """
   def handle_info({ :'ETS-TRANSFER', table, _from, _data }, state) do
     { :noreply, [table | state] }
   end
