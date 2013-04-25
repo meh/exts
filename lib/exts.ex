@@ -13,8 +13,8 @@ defmodule Exts do
     """
 
     @spec message(t) :: String.t
-    def message(self) do
-      self.reason
+    def message(FileError[reason: reason]) do
+      reason
     end
   end
 
