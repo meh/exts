@@ -168,7 +168,8 @@ defmodule Exts do
       :both  -> [{ :write_concurrency, true  }, { :read_concurrency, true  } | args]
       :write -> [{ :write_concurrency, true  }, { :read_concurrency, false } | args]
       :read  -> [{ :write_concurrency, false }, { :read_concurrency, true  } | args]
-      _      -> args
+
+      nil -> args
     end
 
     args = case options[:type] do
@@ -176,14 +177,16 @@ defmodule Exts do
       :ordered_set   -> [:ordered_set | args]
       :bag           -> [:bag | args]
       :duplicate_bag -> [:duplicate_bag | args]
-      _              -> args
+
+      nil -> args
     end
 
     args = case options[:access] do
       :public    -> [:public | args]
       :protected -> [:protected | args]
       :private   -> [:private | args]
-      _          -> args
+
+      nil -> args
     end
 
     args = if options[:heir] do
