@@ -380,6 +380,7 @@ defmodule Exts do
   Select records in the given table using a match_spec passing a limit,
   traversing in reverse, see `ets:select_reverse`.
   """
+  @spec reverse_select(table, non_neg_integer, any) :: Selection.t | nil
   def reverse_select(table, limit, match_spec) do
     Selection.new(:ets.select_reverse(table, match_spec, limit), false)
   end

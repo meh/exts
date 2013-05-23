@@ -49,7 +49,7 @@ defmodule Exts.Dict do
   Raises if the key does not exist in the dictionary.
   """
   def update(dict(table: table) = self, key, fun) when is_function(fun, 1) do
-    if table.contains?(key) do
+    if table.member?(key) do
       { _, value } = table.read(key)
 
       table.write({ key, fun.(value) })
@@ -96,7 +96,7 @@ defmodule Exts.Dict do
   Checks if the dict has the given key.
   """
   def has_key?(dict(table: table), key) do
-    case table.contains?(key) do
+    case table.member?(key) do
       nil -> false
       _   -> true
     end
@@ -175,13 +175,17 @@ defmodule Exts.Dict do
   end
 end
 
-defimpl Enum.Iterator, for: Exts.Dict do
-  def iterator(self) do
-    Enum.Iterator.iterator(Exts.Dict.to_table(self))
+defimpl Enumerable, for: Exts.Dict do
+  def reduce(self, acc, fun) do
+    Exts.Dict.to_table(self).foldl(acc, fun)
+  end
+
+  def member?(self, key) do
+    self.to_table.member?(key)
   end
 
   def count(self) do
-    Enum.Iterator.count(Exts.Dict.to_table(self))
+    Exts.Dict.to_table(self).count
   end
 end
 

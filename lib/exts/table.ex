@@ -217,8 +217,8 @@ defmodule Exts.Table do
   @doc """
   Check if the table contains the given key.
   """
-  @spec contains?(any, t) :: boolean
-  def contains?(key, table(id: id)) do
+  @spec member?(any, t) :: boolean
+  def member?(key, table(id: id)) do
     case Exts.read(id, key) do
       [] -> false
       _  -> true
@@ -377,17 +377,17 @@ defmodule Exts.Table do
   @doc """
   Return an iterator for the table.
   """
-  @spec iterator(t) :: Exts.Table.Iterator.t
-  def iterator(self) do
-    Exts.Table.Iterator.new(self, reverse: false)
+  @spec to_enum(t) :: Exts.Table.Enumerator.t
+  def to_enum(self) do
+    Exts.Table.Enumerator.new(self)
   end
 
   @doc """
-  Return a reverse iterator for the table.
+  Return an iterator for the table.
   """
-  @spec reverse_iterator(t) :: Exts.Table.Iterator.t
-  def reverse_iterator(self) do
-    Exts.Table.Iterator.new(self, reverse: true)
+  @spec to_enum!(t) :: Exts.Table.Enumerator.t
+  def to_enum!(self) do
+    Exts.Table.Enumerator.new(self, reverse: false, safe: false)
   end
 
   @doc """
@@ -424,9 +424,13 @@ defimpl Access, for: Exts.Table do
   end
 end
 
-defimpl Enum.Iterator, for: Exts.Table do
-  def iterator(self) do
-    Enum.Iterator.iterator(self.iterator)
+defimpl Enumerable, for: Exts.Table do
+  def reduce(self, acc, fun) do
+    Enumerable.reduce(self.to_enum, acc, fun)
+  end
+
+  def member?(self, what) do
+    self.member?(what)
   end
 
   def count(self) do
