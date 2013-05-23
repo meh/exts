@@ -62,6 +62,22 @@ defmodule Exts.Table do
   end
 
   @doc """
+  Protect a table for safe iteration.
+  """
+  @spec protect(t) :: none
+  def protect(table(id: id)) do
+    :ets.safe_fixtable(id, true)
+  end
+
+  @doc """
+  Unprotect a table from safe iteration.
+  """
+  @spec unprotect(t) :: none
+  def unprotect(table(id: id)) do
+    :ets.safe_fixtable(id, false)
+  end
+
+  @doc """
   Rename the table to the given atom, see `ets:rename`.
   """
   @spec rename(atom, t) :: atom
@@ -131,24 +147,6 @@ defmodule Exts.Table do
 
       { :error, reason } ->
         raise Exts.FileError, reason: reason
-    end
-  end
-
-  @doc """
-  Protect the table while running the passed function, useful to make iterating
-  safe, see `ets:safe_fixtable`.
-  """
-  @spec protect(function, t) :: any
-  def protect(fun, table(id: id) = self) do
-    :ets.safe_fixtable(id, true)
-
-    try do
-      cond do
-        is_function(fun, 0) -> fun.()
-        is_function(fun, 1) -> fun.(self)
-      end
-    after
-      :ets.safe_fixtable
     end
   end
 
