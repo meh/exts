@@ -3,20 +3,20 @@ Code.require_file "../test_helper.exs", __FILE__
 defmodule DictTest do
   use ExUnit.Case
 
-  test "creation works" do
+  test :new do
     t = Exts.Dict.new
 
     assert is_integer t.to_table.id
   end
 
-  test "put works" do
+  test :put do
     t = Exts.Dict.new
 
     Dict.put(t, :a, :foo)
     assert Dict.get(t, :a) == :foo
   end
 
-  test "get works" do
+  test :get do
     t = Exts.Dict.new
 
     assert Dict.get(t, :a) == nil
@@ -26,7 +26,7 @@ defmodule DictTest do
     assert Dict.get(t, :a) == :foo
   end
 
-  test "update works" do
+  test :update do
     t = Exts.Dict.new
 
     assert_raise KeyError, fn ->
@@ -38,14 +38,14 @@ defmodule DictTest do
     assert Dict.get(t, :a) == 4
   end
 
-  test "update works with a default parameter" do
+  test :update_with_default do
     t = Exts.Dict.new
 
     Dict.update(t, :a, 2, &1 * 2)
     assert Dict.get(t, :a) == 4
   end
 
-  test "delete works" do
+  test :delete do
     t = Exts.Dict.new
 
     Dict.put(t, :a, 2)
@@ -55,7 +55,7 @@ defmodule DictTest do
     assert Dict.get(t, :a) == nil
   end
 
-  test "size works" do
+  test :size do
     t = Exts.Dict.new
 
     assert Dict.size(t) == 0
@@ -63,7 +63,7 @@ defmodule DictTest do
     assert Dict.size(t) == 1
   end
 
-  test "to_list works" do
+  test :to_list do
     t = Exts.Dict.new
 
     assert Dict.to_list(t) == []
@@ -71,7 +71,7 @@ defmodule DictTest do
     assert Dict.to_list(t) == [a: 2]
   end
 
-  test "keys works" do
+  test :keys do
     t = Exts.Dict.new
 
     assert Dict.keys(t) == []
@@ -79,7 +79,7 @@ defmodule DictTest do
     assert Dict.keys(t) == [:a]
   end
 
-  test "values works" do
+  test :values do
     t = Exts.Dict.new
 
     assert Dict.values(t) == []
@@ -87,7 +87,7 @@ defmodule DictTest do
     assert Dict.values(t) == [2]
   end
 
-  test "iteration works" do
+  test Enumerable do
     t = Exts.Dict.new
 
     assert Enum.map(t, fn(x) -> x end) == []
@@ -96,7 +96,7 @@ defmodule DictTest do
     assert Enum.map(t, fn(x) -> x end) == [a: 2]
   end
 
-  test "access works" do
+  test Access do
     t = Exts.Dict.new
 
     assert t[:a] == nil
