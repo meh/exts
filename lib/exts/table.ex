@@ -9,7 +9,7 @@
 defmodule Exts.Table do
   @opaque t :: { Exts.Table, Exts.table, :bag | :duplicate_bag | :set | :oredered_set }
 
-  defrecordp :table, id: nil, type: nil, resource: nil
+  defrecordp :table, id: nil, type: nil, reference: nil
 
   @doc """
   Create a new table with default options.
@@ -37,12 +37,12 @@ defmodule Exts.Table do
       options = Keyword.put(options, :heir, pid: Process.whereis(Exts.Manager))
       options = Keyword.put(options, :access, :public)
 
-      id       = Exts.new(options)
-      resource = if options[:automatic] != false do
+      id        = Exts.new(options)
+      reference = if options[:automatic] != false do
         Finalizer.define({ :destroy, id }, Process.whereis(Exts.Manager))
       end
 
-      table(id: id, type: options[:type] || :set, resource: resource)
+      table(id: id, type: options[:type] || :set, reference: reference)
     else
       table(id: Exts.new(options), type: options[:type] || :set)
     end
