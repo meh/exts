@@ -112,6 +112,73 @@ defmodule Exts.Dict do
   end
 
   @doc """
+  Drops the keys from the given dict.
+  """
+  def drop(self, keys) do
+    Enum.each keys, delete(self, &1)
+
+    self
+  end
+
+  @doc """
+  Checks if the two dicts are the same.
+  """
+  def equal?(dict(table: table), dict(table: other)) do
+    # XXX: should it check the contents too?
+    table.id == other.id
+  end
+
+  @doc """
+  Returns the value under key from the dict and deletes it.
+  """
+  def pop(self, key, default // nil) do
+    value = get(self, key, default)
+    delete(self, key)
+
+    { value, self }
+  end
+
+  @doc """
+  Splits a dict into two dicts, one containing entries with key in the keys list,
+  and another containing entries with key not in keys.
+
+  Returns a 2-tuple of the new dicts.
+
+  Keep in mind this **creates two new ets tables**, use sparingly.
+  """
+  def split(self, keys) do
+    first  = Exts.Dict.new
+    second = Exts.Dict.new
+
+    Enum.each self, fn { key, value } ->
+      if key in keys do
+        put(first, key, value)
+      else
+        put(second, key, value)
+      end
+    end
+
+    { first, second }
+  end
+
+  @doc """
+  Returns a new dict with only the entries which key is in keys.
+
+  Keep in mind this **creates a new ets table**, use sparingly.
+  """
+  def take(self, keys) do
+    result = Exts.Dict.new
+
+    Enum.each keys, fn key ->
+      if has_key?(self, key) do
+        put(result, key, get(self, key))
+      end
+    end
+
+    result
+  end
+
+  @doc """
   Returns the dict size.
   """
   def size(dict(table: table)) do
