@@ -188,8 +188,9 @@ defmodule Exts.Dict do
   @doc """
   Clear the table.
   """
-  def empty(dict(table: table)) do
+  def empty(dict(table: table) = self) do
     table.clear
+    self
   end
 
   @doc """
@@ -239,6 +240,48 @@ defmodule Exts.Dict do
   @spec to_table(Dict.t) :: Exts.Table.t
   def to_table(dict(table: table)) do
     table
+  end
+end
+
+defimpl Data.Dictionary, for: Exts.Dict do
+  defdelegate get(self, key), to: Exts.Dict
+  defdelegate get(self, key, default), to: Exts.Dict
+  defdelegate get!(self, key), to: Exts.Dict
+  defdelegate put(self, key, value), to: Exts.Dict
+  defdelegate delete(self, key), to: Exts.Dict
+  defdelegate keys(self), to: Exts.Dict
+  defdelegate values(self), to: Exts.Dict
+end
+
+defimpl Data.Emptyable, for: Exts.Dict do
+  def empty?(self) do
+    Exts.Dict.size(self) == 0
+  end
+
+  def clear(self) do
+    Exts.Dict.empty(self)
+  end
+end
+
+defimpl Data.Counted, for: Exts.Dict do
+  defdelegate count(self), to: Exts.Dict, as: :size
+end
+
+defimpl Data.Listable, for: Exts.Dict do
+  defdelegate to_list(self), to: Exts.Dict
+end
+
+defimpl Data.Contains, for: Exts.Dict do
+  defdelegate contains?(self, key), to: Exts.Dict, as: :has_key?
+end
+
+defimpl Data.Foldable, for: Exts.Dict do
+  def foldl(self, acc, fun) do
+    self.to_table.foldl(self, acc, fun)
+  end
+
+  def foldr(self, acc, fun) do
+    self.to_table.foldr(self, acc, fun)
   end
 end
 
