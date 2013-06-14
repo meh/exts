@@ -377,17 +377,17 @@ defmodule Exts.Table do
   @doc """
   Return an iterator for the table.
   """
-  @spec to_enum(t) :: Exts.Table.Enumerator.t
-  def to_enum(self) do
-    Exts.Table.Enumerator.new(self)
+  @spec to_sequence(t) :: Exts.Table.Sequence.t
+  def to_sequence(self) do
+    Exts.Table.Sequence.new(self)
   end
 
   @doc """
   Return an iterator for the table.
   """
-  @spec to_enum!(t) :: Exts.Table.Enumerator.t
-  def to_enum!(self) do
-    Exts.Table.Enumerator.new(self, reverse: false, safe: false)
+  @spec to_sequence!(t) :: Exts.Table.Sequence.t
+  def to_sequence!(self) do
+    Exts.Table.Sequence.new(self, reverse: false, safe: false)
   end
 
   @doc """
@@ -418,23 +418,112 @@ defmodule Exts.Table do
   end
 end
 
-defimpl Access, for: Exts.Table do
-  def access(table, key) do
-    table.read(key)
+defimpl Data.Dictionary, for: Exts.Table do
+  def get(self, key, default // nil) do
+    case self.read(key) do
+      { ^key, value } ->
+        value
+
+      nil ->
+        default
+    end
+  end
+
+  def get!(self, key) do
+    case self.read(key) do
+      { ^key, value } ->
+        value
+
+      nil ->
+        raise Data.Missing, key: key
+    end
+  end
+
+  def put(self, key, value) do
+    self.write { key, value }
+    self
+  end
+
+  def delete(self, key) do
+    self.delete(key)
+    self
+  end
+
+  def keys(self) do
+    case self.select([{{ :'$1', :'$2' }, [], [:'$1'] }]) do
+      nil -> []
+      s   -> s.values
+    end
+  end
+
+  def values(self) do
+    case self.select([{{ :'$1', :'$2' }, [], [:'$2'] }]) do
+      nil -> []
+      s   -> s.values
+    end
   end
 end
 
-defimpl Enumerable, for: Exts.Table do
-  def reduce(self, acc, fun) do
-    Enumerable.reduce(self.to_enum, acc, fun)
+defimpl Data.Contains, for: Exts.Table do
+  def contains?(self, { key, value }) do
+    case self.read(key) do
+      { ^key, ^value } ->
+        true
+
+      _ ->
+        false
+    end
   end
 
-  def member?(self, what) do
-    self.member?(what)
-  end
+  def contains?(self, key) do
+    case self.read(key) do
+      { ^key, _ } ->
+        true
 
+      nil ->
+        false
+    end
+  end
+end
+
+defimpl Data.Counted, for: Exts.Table do
   def count(self) do
-    self.count
+    self.size
+  end
+end
+
+defimpl Data.Emptyable, for: Exts.Table do
+  def empty?(self) do
+    self.count == 0
+  end
+
+  def clear(self) do
+    self.clear
+    self
+  end
+end
+
+defimpl Data.Foldable, for: Exts.Table do
+  def foldl(self, acc, fun) do
+    self.foldl(acc, fun)
+  end
+
+  def foldr(self, acc, fun) do
+    self.foldr(acc, fun)
+  end
+end
+
+defimpl Data.Sequenceable, for: Exts.Table do
+  defdelegate to_sequence(self), to: Exts.Table
+end
+
+defimpl Data.Listable, for: Exts.Table do
+  defdelegate to_list(self), to: Exts.Table
+end
+
+defimpl Access, for: Exts.Table do
+  def access(table, key) do
+    table.read(key)
   end
 end
 
