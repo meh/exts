@@ -50,6 +50,6 @@ defmodule TableTest do
     t.write { :b, 4, 5 }
     t.write { :c, 3, 6 }
 
-    assert Enum.map(t, fn(x) -> x end) == [{ :a, 2, 3 }, { :b, 4, 5 }, { :c, 3, 6 }]
+    assert Data.Seq.map(t, fn(x) -> x end) == [{ :a, 2, 3 }, { :b, 4, 5 }, { :c, 3, 6 }]
   end
 end
