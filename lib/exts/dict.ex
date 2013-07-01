@@ -25,6 +25,14 @@ defmodule Exts.Dict do
   end
 
   @doc """
+  Wrap a table into an Exts.Dict.
+  """
+  @spec from_table(Exts.Table.t) :: Dict.t
+  def from_table(table) do
+    dict(table: table)
+  end
+
+  @doc """
   Puts the given key and value in the dict.
   """
   def put(dict(table: table) = self, key, value) do
