@@ -101,6 +101,10 @@ defmodule Exts.Table do
   @spec load(String.t)            :: { :ok, t } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, t } | { :error, any }
   def load(path, options // []) do
+    if is_binary(path) do
+      path = binary_to_list(path)
+    end
+
     case :ets.file2tab(path, options) do
       { :ok, id } ->
         { :ok, new(id) }
@@ -117,9 +121,9 @@ defmodule Exts.Table do
   @spec load!(String.t)            :: t | no_return
   @spec load!(String.t, Keyword.t) :: t | no_return
   def load!(path, options // []) do
-    case :ets.file2tab(path, options) do
-      { :ok, id } ->
-        new(id)
+    case load(path, options) do
+      { :ok, table } ->
+        table
 
       { :error, reason } ->
         raise Exts.FileError, reason: reason
@@ -132,6 +136,10 @@ defmodule Exts.Table do
   @spec dump(String.t, t) :: :ok | { :error, any }
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
   def dump(path, options // [], table(id: id)) do
+    if is_binary(path) do
+      path = binary_to_list(path)
+    end
+
     :ets.tab2file(id, path, options)
   end
 
@@ -140,8 +148,8 @@ defmodule Exts.Table do
   """
   @spec dump!(String.t, t) :: :ok | no_return
   @spec dump!(String.t, Keyword.t, t) :: :ok | no_return
-  def dump!(path, options // [], table(id: id)) do
-    case :ets.tab2file(id, path, options) do
+  def dump!(path, options // [], self) do
+    case dump(path, options, self) do
       :ok ->
         :ok
 
