@@ -503,13 +503,9 @@ defimpl Data.Emptyable, for: Exts.Table do
   end
 end
 
-defimpl Data.Foldable, for: Exts.Table do
-  def foldl(self, acc, fun) do
+defimpl Data.Reducible, for: Exts.Table do
+  def reduce(self, acc, fun) do
     self.foldl(acc, fun)
-  end
-
-  def foldr(self, acc, fun) do
-    self.foldr(acc, fun)
   end
 end
 

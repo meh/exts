@@ -275,13 +275,9 @@ defimpl Data.Contains, for: Exts.Dict do
   defdelegate contains?(self, key), to: Exts.Dict, as: :has_key?
 end
 
-defimpl Data.Foldable, for: Exts.Dict do
-  def foldl(self, acc, fun) do
+defimpl Data.Reducible, for: Exts.Dict do
+  def reduce(self, acc, fun) do
     self.to_table.foldl(self, acc, fun)
-  end
-
-  def foldr(self, acc, fun) do
-    self.to_table.foldr(self, acc, fun)
   end
 end
 
