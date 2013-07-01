@@ -26,6 +26,10 @@ defmodule Exts do
   @spec load(String.t) :: { :ok, table } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, table } | { :error, any }
   def load(path, options // []) do
+    if is_binary(path) do
+      path = binary_to_list(path)
+    end
+
     :ets.file2tab(path, options)
   end
 
@@ -36,7 +40,7 @@ defmodule Exts do
   @spec load!(String.t) :: table | no_return
   @spec load!(String.t, Keyword.t) :: table | no_return
   def load!(path, options // []) do
-    case :ets.file2tab(path, options) do
+    case load(path, options) do
       { :ok, table } ->
         table
 
@@ -51,6 +55,10 @@ defmodule Exts do
   @spec dump(table, String.t) :: :ok | { :error, any }
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
   def dump(table, path, options // []) do
+    if is_binary(path) do
+      path = binary_to_list(path)
+    end
+
     :ets.tab2file(table, path, options)
   end
 
@@ -61,7 +69,7 @@ defmodule Exts do
   @spec dump!(table, String.t) :: :ok | no_return
   @spec dump!(table, String.t, Keyword.t) :: :ok | no_return
   def dump!(table, path, options // []) do
-    case :ets.tab2file(table, path, options) do
+    case dump(table, path, options) do
       :ok ->
         :ok
 
@@ -76,6 +84,10 @@ defmodule Exts do
   """
   @spec info(String.t | table) :: { :ok, any } | { :error, any } | Keyword.t | nil
   def info(path) when is_binary path do
+    if is_binary(path) do
+      path = binary_to_list(path)
+    end
+
     :ets.tabfile_info(path)
   end
 
