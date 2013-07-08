@@ -38,7 +38,7 @@ defmodule Exts.Table.Sequence do
     sequence(self, reverse: !reverse)
   end
 
-  def first(sequence(table: table, reverse: false, key: key) = it) do
+  def first(sequence(table: table, reverse: false, key: key)) do
     if key == nil do
       table.read(table.first)
     else
@@ -46,7 +46,7 @@ defmodule Exts.Table.Sequence do
     end
   end
 
-  def first(sequence(table: table, reverse: true, key: key) = it) do
+  def first(sequence(table: table, reverse: true, key: key)) do
     if key == nil do
       table.read(table.last)
     else
