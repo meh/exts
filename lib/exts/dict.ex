@@ -14,7 +14,7 @@ defmodule Exts.Dict do
 
   @behaviour Dict
 
-  defrecordp :dict, table: nil
+  defrecordp :dict, __MODULE__, table: nil
 
   @doc """
   Create a new empty dict.

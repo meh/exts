@@ -9,7 +9,7 @@
 defmodule Exts.Table.Sequence do
   @opaque t :: record
 
-  defrecordp :sequence, table: nil, key: nil, reverse: false, safe: true
+  defrecordp :sequence, __MODULE__, table: nil, key: nil, reverse: false, safe: true
 
   def new(table, rest // []) do
     if :ets.first(table.id) == :'$end_of_table' do

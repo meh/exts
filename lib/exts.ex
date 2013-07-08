@@ -311,7 +311,7 @@ defmodule Exts do
 
     @opaque t :: record
 
-    defrecordp :selection, values: [], continuation: nil, reverse: false
+    defrecordp :selection, __MODULE__, values: [], continuation: nil, reverse: false
 
     @doc """
     Get a Selection from the various select results.
@@ -406,7 +406,7 @@ defmodule Exts do
 
     @opaque t :: record
 
-    defrecordp :match, values: [], continuation: nil, whole: false
+    defrecordp :match, __MODULE__, values: [], continuation: nil, whole: false
 
     @doc """
     Get a Match from the various match results.

@@ -9,7 +9,7 @@
 defmodule Exts.Table do
   @opaque t :: { Exts.Table, Exts.table, :bag | :duplicate_bag | :set | :oredered_set }
 
-  defrecordp :table, id: nil, type: nil, reference: nil
+  defrecordp :table, __MODULE__, id: nil, type: nil, reference: nil
 
   @doc """
   Create a new table with default options.
