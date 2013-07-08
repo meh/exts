@@ -309,8 +309,10 @@ defimpl Access, for: Exts.Dict do
   end
 end
 
-defimpl Binary.Inspect, for: Exts.Dict do
+defimpl Inspect, for: Exts.Dict do
+  import Inspect.Algebra
+
   def inspect(dict, opts) do
-    "#Exts.Dict<" <> Kernel.inspect(Exts.Dict.to_list(dict), opts) <> ">"
+    concat ["#Exts.Dict<", Kernel.inspect(Exts.Dict.to_list(dict), opts), ">"]
   end
 end

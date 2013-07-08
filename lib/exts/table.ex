@@ -531,8 +531,10 @@ defimpl Access, for: Exts.Table do
   end
 end
 
-defimpl Binary.Inspect, for: Exts.Table do
+defimpl Inspect, for: Exts.Table do
+  import Inspect.Algebra
+
   def inspect(self, _opts) do
-    "#Exts.Table<#{self.id}>"
+    concat ["#Exts.Table<", self.id, ">"]
   end
 end
