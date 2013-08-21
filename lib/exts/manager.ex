@@ -22,13 +22,7 @@ defmodule Exts.Manager do
     if pid = Process.whereis(__MODULE__) do
       { :ok, pid }
     else
-      case :gen_server.start_link(__MODULE__, [], []) do
-        { :ok, pid } = r ->
-          Process.register(pid, __MODULE__)
-          r
-
-        r -> r
-      end
+      :gen_server.start_link({ :local, __MODULE__ }, __MODULE__, [], [])
     end
   end
 
