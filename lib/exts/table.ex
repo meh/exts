@@ -535,6 +535,6 @@ defimpl Inspect, for: Exts.Table do
   import Inspect.Algebra
 
   def inspect(self, _opts) do
-    concat ["#Exts.Table<", self.id, ">"]
+    concat ["#Exts.Table<", Kernel.inspect(self.id, _opts), ">"]
   end
 end
