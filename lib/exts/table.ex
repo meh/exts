@@ -201,7 +201,7 @@ defmodule Exts.Table do
   @doc """
   Convert the table to a list, see `ets:tab2list`.
   """
-  @spec to_list(t) :: [record]
+  @spec to_list(t) :: [term]
   def to_list(table(id: id)) do
     Exts.to_list(id)
   end
@@ -234,10 +234,10 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Read a records from the table, if it's a set or ordered set it returns a
-  single record, otherwise it returns a list of records, see `ets:lookup`.
+  Read terms from the table, if it's a set or ordered set it returns a single
+  term, otherwise it returns a list of terms, see `ets:lookup`.
   """
-  @spec read(any, t) :: [record] | record
+  @spec read(any, t) :: [term] | term
   def read(key, table(id: id, type: type)) when type in [:bag, :duplicate_bag] do
     case Exts.read(id, key) do
       [] -> nil
@@ -250,9 +250,9 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Read the records in the given slot, see `ets:slot`.
+  Read the terms in the given slot, see `ets:slot`.
   """
-  @spec at(integer, t) :: [record]
+  @spec at(integer, t) :: [term]
   def at(slot, table(id: id)) do
     Exts.at(id, slot)
   end
@@ -290,7 +290,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Select records in the table using a match_spec, see `ets:select`.
+  Select terms in the table using a match_spec, see `ets:select`.
   """
   @spec select(any, t) :: [any]
   def select(match_spec, table(id: id)) do
@@ -298,7 +298,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Select records in the table using a match_spec and passing a limit,
+  Select terms in the table using a match_spec and passing a limit,
   `ets:select`.
   """
   @spec select(integer, any, t) :: [any]
@@ -307,7 +307,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Select records in the table using a match_spec, traversing in reverse, see
+  Select terms in the table using a match_spec, traversing in reverse, see
   `ets:select_reverse`.
   """
   @spec reverse_select(any, t) :: [any]
@@ -316,7 +316,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Select records in the table using a match_spec and passing a limit,
+  Select terms in the table using a match_spec and passing a limit,
   traversing in reverse, `ets:select_reverse`.
   """
   @spec reverse_select(integer, any, t) :: [any]
@@ -325,7 +325,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Match records from the table with the given pattern, see `ets:match`.
+  Match terms from the table with the given pattern, see `ets:match`.
   """
   @spec match(any, t) :: Match.t | nil
   def match(pattern, table(id: id)) do
@@ -333,7 +333,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Match records from the table with the given pattern and options or limit, see
+  Match terms from the table with the given pattern and options or limit, see
   `ets:match`.
   """
   @spec match(any | integer, Keyword.t | any, t) :: Match.t | nil
@@ -342,7 +342,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Match records from the table with the given pattern, options and limit, see
+  Match terms from the table with the given pattern, options and limit, see
   `ets:match`.
   """
   @spec match(integer, any, Keyword.t, t) :: Match.t | nil
@@ -351,7 +351,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Get the number of records in the table.
+  Get the number of terms in the table.
   """
   @spec count(t) :: non_neg_integer
   def count(table(id: id)) do
@@ -359,7 +359,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Count the number of records matching the match_spec, see `ets:select_count`.
+  Count the number of terms matching the match_spec, see `ets:select_count`.
   """
   @spec count(any, t) :: non_neg_integer
   def count(spec, table(id: id)) do
@@ -369,7 +369,7 @@ defmodule Exts.Table do
   @doc """
   Fold the table from the left, see `ets:foldl`.
   """
-  @spec foldl(any, (record, any -> any), t) :: any
+  @spec foldl(any, (term, any -> any), t) :: any
   def foldl(acc, fun, table(id: id)) do
     Exts.foldl(id, acc, fun)
   end
@@ -377,7 +377,7 @@ defmodule Exts.Table do
   @doc """
   Fold the table from the right, see `ets:foldr`.
   """
-  @spec foldr(any, (record, any -> any), t) :: any
+  @spec foldr(any, (term, any -> any), t) :: any
   def foldr(acc, fun, table(id: id)) do
     Exts.foldr(id, acc, fun)
   end
@@ -399,7 +399,7 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Delete the record matching the given match_spec or key, see
+  Delete the term matching the given match_spec or key, see
   `ets:select_delete` and `ets:delete`.
   """
   @spec delete(any, t) :: true
@@ -408,19 +408,19 @@ defmodule Exts.Table do
   end
 
   @doc """
-  Delete the given record from the table, see `ets:delete_object`.
+  Delete the given term from the table, see `ets:delete_object`.
   """
-  @spec delete!(record, t) :: true
+  @spec delete!(term, t) :: true
   def delete!(object, table(id: id)) do
     Exts.delete!(id, object)
   end
 
   @doc """
-  Write the given record to the table optionally disabling overwriting, see
+  Write the given term to the table optionally disabling overwriting, see
   `ets:insert` and `ets:insert_new`.
   """
-  @spec write(record, t)            :: boolean
-  @spec write(record, Keyword.t, t) :: boolean
+  @spec write(term, t)            :: boolean
+  @spec write(term, Keyword.t, t) :: boolean
   def write(object, options // [], table(id: id)) do
     Exts.write(id, object, options)
   end
