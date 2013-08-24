@@ -40,45 +40,45 @@ defmodule Exts.Table.Sequence do
 
   def first(sequence(table: table, reverse: false, key: key)) do
     if key == nil do
-      table.read(table.first)
-    else
-      table.read(key)
+      key = table.first
     end
+
+    table.read(key)
   end
 
   def first(sequence(table: table, reverse: true, key: key)) do
     if key == nil do
-      table.read(table.last)
-    else
-      table.read(key)
+      key = table.last
     end
+
+    table.read(key)
   end
 
   def next(sequence(table: table, reverse: false, key: key) = it) do
     if key == nil do
-      sequence(it, key: table.next(table.first))
-    else
-      case table.next(key) do
-        nil ->
-          nil
+      key = table.first
+    end
 
-        key ->
-          sequence(it, key: key)
-      end
+    case table.next(key) do
+      nil ->
+        nil
+
+      key ->
+        sequence(it, key: key)
     end
   end
 
   def next(sequence(table: table, reverse: true, key: key) = it) do
     if key == nil do
-      sequence(it, key: table.prev(table.last))
-    else
-      case table.prev(key) do
-        nil ->
-          nil
+      key = table.last
+    end
 
-        key ->
-          sequence(it, key: key)
-      end
+    case table.prev(key) do
+      nil ->
+        nil
+
+      key ->
+        sequence(it, key: key)
     end
   end
 end
