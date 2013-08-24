@@ -4,6 +4,7 @@ defmodule Exts.Mixfile do
   def project do
     [ app: :exts,
       version: "0.0.1",
+      elixir: "~> 0.9.0 or ~> 0.10.0",
       deps: deps ]
   end
 
