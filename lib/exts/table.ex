@@ -193,7 +193,15 @@ defmodule Exts.Table do
   @doc """
   Get info about the table, see `ets:info`.
   """
-  @spec info(t, atom) :: any | nil
+  @spec info(t) :: [any] | nil
+  def info(table(id: id)) do
+    Exts.info(id)
+  end
+
+  @doc """
+  Get info about the table, see `ets:info`.
+  """
+  @spec info(atom, t) :: any | nil
   def info(key, table(id: id)) do
     Exts.info(id, key)
   end
