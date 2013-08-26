@@ -302,6 +302,22 @@ defmodule Exts do
     end
   end
 
+  @doc """
+  Get the keys in the given table.
+  """
+  @spec keys(table) :: [term]
+  def keys(table) do
+    do_keys([], table, first(table))
+  end
+
+  defp do_keys(acc, _, nil) do
+    acc
+  end
+
+  defp do_keys(acc, table, key) do
+    [key | acc] |> do_keys(table, next(table, key))
+  end
+
   defmodule Selection do
     @moduledoc """
     Selection wraps an `ets:select` result, which may or may not contain a
