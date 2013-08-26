@@ -298,6 +298,18 @@ defmodule Exts.Table do
   end
 
   @doc """
+  Get the keys in the table.
+  """
+  @spec keys(t) :: [term]
+  def keys(table(id: id, type: :ordered_set)) do
+    Dexts.keys(id) |> Enum.reverse
+  end
+
+  def keys(table(id: id)) do
+    Dexts.keys(id)
+  end
+
+  @doc """
   Select terms in the table using a match_spec, see `ets:select`.
   """
   @spec select(any, t) :: [any]
