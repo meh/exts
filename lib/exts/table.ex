@@ -102,7 +102,7 @@ defmodule Exts.Table do
   @spec load(String.t, Keyword.t) :: { :ok, t } | { :error, any }
   def load(path, options // []) do
     if is_binary(path) do
-      path = binary_to_list(path)
+      path = String.from_char_list!(path)
     end
 
     case :ets.file2tab(path, options) do
@@ -137,7 +137,7 @@ defmodule Exts.Table do
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
   def dump(path, options // [], table(id: id)) do
     if is_binary(path) do
-      path = binary_to_list(path)
+      path = String.from_char_list!(path)
     end
 
     :ets.tab2file(id, path, options)

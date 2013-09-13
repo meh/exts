@@ -27,7 +27,7 @@ defmodule Exts do
   @spec load(String.t, Keyword.t) :: { :ok, table } | { :error, any }
   def load(path, options // []) do
     if is_binary(path) do
-      path = binary_to_list(path)
+      path = String.from_char_list!(path)
     end
 
     :ets.file2tab(path, options)
@@ -56,7 +56,7 @@ defmodule Exts do
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
   def dump(table, path, options // []) do
     if is_binary(path) do
-      path = binary_to_list(path)
+      path = String.from_char_list!(path)
     end
 
     :ets.tab2file(table, path, options)
@@ -85,7 +85,7 @@ defmodule Exts do
   @spec info(String.t | table) :: { :ok, any } | { :error, any } | Keyword.t | nil
   def info(path) when is_binary path do
     if is_binary(path) do
-      path = binary_to_list(path)
+      path = String.from_char_list!(path)
     end
 
     :ets.tabfile_info(path)
