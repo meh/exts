@@ -34,14 +34,14 @@ defmodule DictTest do
     end
 
     Dict.put(t, :a, 2)
-    Dict.update(t, :a, &1 * 2)
+    Dict.update(t, :a, &(&1 * 2))
     assert Dict.get(t, :a) == 4
   end
 
   test :update_with_default do
     t = Exts.Dict.new
 
-    Dict.update(t, :a, 2, &1 * 2)
+    Dict.update(t, :a, 2, &(&1 * 2))
     assert Dict.get(t, :a) == 4
   end
 
