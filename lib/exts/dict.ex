@@ -123,7 +123,7 @@ defmodule Exts.Dict do
   Drops the keys from the given dict.
   """
   def drop(self, keys) do
-    Enum.each keys, delete(self, &1)
+    Enum.each keys, &delete(self, &1)
 
     self
   end
