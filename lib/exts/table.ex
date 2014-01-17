@@ -254,7 +254,7 @@ defmodule Exts.Table do
   end
 
   def read(key, table(id: id, type: type)) when type in [:set, :ordered_set] do
-    Enum.first Exts.read(id, key)
+    List.first Exts.read(id, key)
   end
 
   @doc """
