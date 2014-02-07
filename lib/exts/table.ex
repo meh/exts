@@ -91,7 +91,7 @@ defmodule Exts.Table do
   """
   @spec give_to(pid, t) :: true
   @spec give_to(pid, any, t) :: true
-  def give_to(pid, data // nil, table(id: id)) do
+  def give_to(pid, data \\ nil, table(id: id)) do
     Exts.give_to(id, pid, data)
   end
 
@@ -100,7 +100,7 @@ defmodule Exts.Table do
   """
   @spec load(String.t)            :: { :ok, t } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, t } | { :error, any }
-  def load(path, options // []) do
+  def load(path, options \\ []) do
     if is_binary(path) do
       path = String.from_char_list!(path)
     end
@@ -120,7 +120,7 @@ defmodule Exts.Table do
   """
   @spec load!(String.t)            :: t | no_return
   @spec load!(String.t, Keyword.t) :: t | no_return
-  def load!(path, options // []) do
+  def load!(path, options \\ []) do
     case load(path, options) do
       { :ok, table } ->
         table
@@ -135,7 +135,7 @@ defmodule Exts.Table do
   """
   @spec dump(String.t, t) :: :ok | { :error, any }
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
-  def dump(path, options // [], table(id: id)) do
+  def dump(path, options \\ [], table(id: id)) do
     if is_binary(path) do
       path = String.from_char_list!(path)
     end
@@ -148,7 +148,7 @@ defmodule Exts.Table do
   """
   @spec dump!(String.t, t) :: :ok | no_return
   @spec dump!(String.t, Keyword.t, t) :: :ok | no_return
-  def dump!(path, options // [], self) do
+  def dump!(path, options \\ [], self) do
     case dump(path, options, self) do
       :ok ->
         :ok
@@ -441,13 +441,13 @@ defmodule Exts.Table do
   """
   @spec write(term, t)            :: boolean
   @spec write(term, Keyword.t, t) :: boolean
-  def write(object, options // [], table(id: id)) do
+  def write(object, options \\ [], table(id: id)) do
     Exts.write(id, object, options)
   end
 end
 
 defimpl Data.Dictionary, for: Exts.Table do
-  def get(self, key, default // nil) do
+  def get(self, key, default \\ nil) do
     case self.read(key) do
       { ^key, value } ->
         value

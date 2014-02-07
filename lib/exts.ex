@@ -25,7 +25,7 @@ defmodule Exts do
   """
   @spec load(String.t) :: { :ok, table } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, table } | { :error, any }
-  def load(path, options // []) do
+  def load(path, options \\ []) do
     if is_binary(path) do
       path = String.from_char_list!(path)
     end
@@ -39,7 +39,7 @@ defmodule Exts do
   """
   @spec load!(String.t) :: table | no_return
   @spec load!(String.t, Keyword.t) :: table | no_return
-  def load!(path, options // []) do
+  def load!(path, options \\ []) do
     case load(path, options) do
       { :ok, table } ->
         table
@@ -54,7 +54,7 @@ defmodule Exts do
   """
   @spec dump(table, String.t) :: :ok | { :error, any }
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
-  def dump(table, path, options // []) do
+  def dump(table, path, options \\ []) do
     if is_binary(path) do
       path = String.from_char_list!(path)
     end
@@ -68,7 +68,7 @@ defmodule Exts do
   """
   @spec dump!(table, String.t) :: :ok | no_return
   @spec dump!(table, String.t, Keyword.t) :: :ok | no_return
-  def dump!(table, path, options // []) do
+  def dump!(table, path, options \\ []) do
     case dump(table, path, options) do
       :ok ->
         :ok
@@ -219,7 +219,7 @@ defmodule Exts do
   """
   @spec give_to(table, pid)      :: true
   @spec give_to(table, pid, any) :: true
-  def give_to(table, pid, data // nil) do
+  def give_to(table, pid, data \\ nil) do
     :ets.give_away(table, pid, data)
   end
 
@@ -333,7 +333,7 @@ defmodule Exts do
     Get a Selection from the various select results.
     """
     @spec new(:'$end_of_table' | list | { list, any }) :: t | nil
-    def new(value, reverse // false) do
+    def new(value, reverse \\ false) do
       case value do
         :'$end_of_table' -> nil
         []               -> nil
@@ -427,7 +427,7 @@ defmodule Exts do
     @doc """
     Get a Match from the various match results.
     """
-    def new(value, whole // false) do
+    def new(value, whole \\ false) do
       case value do
         :'$end_of_table' -> nil
         []               -> nil
@@ -573,7 +573,7 @@ defmodule Exts do
   """
   @spec write(table, term)            :: boolean
   @spec write(table, term, Keyword.t) :: boolean
-  def write(table, object, options // []) do
+  def write(table, object, options \\ []) do
     if options[:overwrite] == false do
       :ets.insert_new(table, object)
     else
