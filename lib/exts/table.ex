@@ -28,18 +28,18 @@ defmodule Exts.Table do
   Smart garbage collection implies tables won't die with processes and they
   will be destroyed when they aren't referenced by anything anymore.
 
-  The Exts.Manager process will be set as heir and you'll be able to retake
-  ownership of a table if wanted.
+  The Exts.Manager (via registered process name :exts) process will be set
+  as heir and you'll be able to retake ownership of a table if wanted.
   """
   @spec new(integer | atom | Keyword.t) :: t
   def new(options) when is_list options do
     if options[:automatic] != false do
-      options = Keyword.put(options, :heir, pid: Process.whereis(Exts.Manager))
+      options = Keyword.put(options, :heir, pid: Process.whereis(:exts))
       options = Keyword.put(options, :access, :public)
 
       id        = Exts.new(options)
       reference = if options[:automatic] != false do
-        Finalizer.define({ :destroy, id }, Process.whereis(Exts.Manager))
+        Finalizer.define({ :destroy, id }, Process.whereis(:exts))
       end
 
       table(id: id, type: options[:type] || :set, reference: reference)
@@ -555,6 +555,6 @@ defimpl Inspect, for: Exts.Table do
   import Inspect.Algebra
 
   def inspect(self, _opts) do
-    concat ["#Exts.Table<", Kernel.inspect(self.id, _opts), ">"]
+    concat ["#Exts.Table<", Kernel.inspect(self.id), ">"]
   end
 end

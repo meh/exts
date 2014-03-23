@@ -11,27 +11,10 @@ defmodule Exts.Manager do
   This module manages smart garbage collection for ets tables.
   """
 
-  use Application.Behaviour
   use GenServer.Behaviour
 
-  @doc """
-  Start the manager, if it's already started it will just return the original
-  process.
-  """
-  def start(_, _) do
-    if pid = Process.whereis(__MODULE__) do
-      { :ok, pid }
-    else
-      :gen_server.start_link({ :local, __MODULE__ }, __MODULE__, [], [])
-    end
-  end
-
-  @doc """
-  Stop the manager, killing the process, keep in mind this will terminate the
-  managed tables too.
-  """
-  def stop(_) do
-    Process.exit(Process.whereis(__MODULE__), "application stopped")
+  def start_link(_args \\ []) do
+    :gen_server.start_link({ :local, :exts }, __MODULE__, [], [])
   end
 
   @doc """
