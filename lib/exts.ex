@@ -7,6 +7,16 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts do
+  use Application.Behaviour
+
+  def start(_, _) do
+    Exts.Supervisor.start_link
+  end
+
+  def stop(_) do
+    :ok
+  end
+
   defexception FileError, reason: nil do
     @moduledoc """
     Exception thrown if an error occurs on loading or dumping a table.

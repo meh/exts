@@ -12,8 +12,8 @@ defmodule Exts.Mixfile do
     if System.get_env("ELIXIR_NO_NIF") do
       []
     else
-      [ applications: [:finalizer],
-        mod: { Exts.Manager, [] } ]
+      [ applications: [:datastructures, :finalizer],
+        mod: { Exts, [] } ]
     end
   end
 
@@ -21,7 +21,7 @@ defmodule Exts.Mixfile do
     if System.get_env("ELIXIR_NO_NIF") do
       [ { :datastructures, github: "meh/elixir-datastructures" } ]
     else
-      [ { :finalizer, github: "meh/elixir-finalizer" },
+      [ { :finalizer,      github: "meh/elixir-finalizer" },
         { :datastructures, github: "meh/elixir-datastructures" } ]
     end
   end
