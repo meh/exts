@@ -34,15 +34,6 @@ defmodule Exts.Dict do
   end
 
   @doc """
-  Get the id of the table, usable with the raw :ets functions or Exts wrapped
-  ones.
-  """
-  @spec id(t) :: integer | atom
-  def id(%T{id: id}) do
-    id
-  end
-
-  @doc """
   Protect a table for safe iteration.
   """
   @spec protect(t) :: none
