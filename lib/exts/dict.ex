@@ -236,6 +236,16 @@ defmodule Exts.Dict do
     end
   end
 
+  def update!(self, key, fun) do
+    case fetch(self, key) do
+      { :ok, value } ->
+        put(self, key, fun.(value))
+
+      :error ->
+        raise KeyError, key: key, term: self
+    end
+  end
+
   @doc """
   Convert the table to a list, see `ets:tab2list`.
   """
