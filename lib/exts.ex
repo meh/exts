@@ -7,14 +7,13 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts do
-  defexception FileError, reason: nil do
+  defexception FileError, message: nil do
     @moduledoc """
     Exception thrown if an error occurs on loading or dumping a table.
     """
 
-    @spec message(t) :: String.t
-    def message(FileError[reason: reason]) do
-      reason
+    def exception(reason: { :file_error, path, :enoent }) do
+      FileError[message: to_string(path) <> " doesn't exist"]
     end
   end
 
@@ -25,12 +24,8 @@ defmodule Exts do
   """
   @spec load(String.t) :: { :ok, table } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, table } | { :error, any }
-  def load(path, options \\ []) do
-    if is_binary(path) do
-      path = String.from_char_list!(path)
-    end
-
-    :ets.file2tab(path, options)
+  def load(path, options \\ []) when path |> is_binary do
+    :ets.file2tab(String.from_char_list!(path), options)
   end
 
   @doc """
@@ -54,12 +49,8 @@ defmodule Exts do
   """
   @spec dump(table, String.t) :: :ok | { :error, any }
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
-  def dump(table, path, options \\ []) do
-    if is_binary(path) do
-      path = String.from_char_list!(path)
-    end
-
-    :ets.tab2file(table, path, options)
+  def dump(table, path, options \\ []) when path |> is_binary do
+    :ets.tab2file(table, String.from_char_list!(path), options)
   end
 
   @doc """
@@ -83,12 +74,8 @@ defmodule Exts do
   and `ets:tabfile_info`.
   """
   @spec info(String.t | table) :: { :ok, any } | { :error, any } | Keyword.t | nil
-  def info(path) when is_binary path do
-    if is_binary(path) do
-      path = String.from_char_list!(path)
-    end
-
-    :ets.tabfile_info(path)
+  def info(path) when path |> is_binary do
+    :ets.tabfile_info(String.from_char_list!(path))
   end
 
   def info(table) do
