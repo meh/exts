@@ -393,6 +393,12 @@ defmodule Exts.Dict do
     reduce(table, next(table, key), fun.({ key, fetch!(table, key) }, acc), fun)
   end
 
+  defimpl Access do
+    def access(table, key) do
+      Dict.get(table, key)
+    end
+  end
+
   defimpl Enumerable do
     def reduce(table, acc, fun) do
       Exts.Dict.reduce(table, acc, fun)
