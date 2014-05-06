@@ -346,22 +346,6 @@ defmodule Exts do
     end
 
     @doc """
-    Check if the Selection is traversing in reverse.
-    """
-    @spec reverse?(t) :: boolean
-    def reverse?(%Selection{reverse: reverse}) do
-      reverse
-    end
-
-    @doc """
-    Get the values in the current Selection.
-    """
-    @spec values(t) :: [any]
-    def values(%Selection{values: values}) do
-      values
-    end
-
-    @doc """
     Get the next set of values wrapped in another Selection, returns nil if
     there are no more.
     """
@@ -432,22 +416,6 @@ defmodule Exts do
         [_ | _] ->
           %Match{values: value, whole: whole}
       end
-    end
-
-    @doc """
-    Check if the Match is matching whole objects.
-    """
-    @spec whole?(t) :: boolean
-    def whole?(%Match{whole: whole}) do
-      whole
-    end
-
-    @doc """
-    Get the values in the current Match.
-    """
-    @spec values(t) :: [any]
-    def values(%Match{values: values}) do
-      values
     end
 
     @doc """

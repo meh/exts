@@ -10,7 +10,6 @@ defmodule Exts.Dict do
   defstruct [:id, :type]
 
   alias __MODULE__, as: T
-  alias Exts.Selection, as: S
 
   use Dict.Behaviour
 
@@ -201,8 +200,10 @@ defmodule Exts.Dict do
     Exts.delete(id, key_or_pattern)
   end
 
-  def put(%T{id: id}, key, value) do
+  def put(%T{id: id} = self, key, value) do
     Exts.write id, { key, value }
+
+    self
   end
 
   def fetch(%T{id: id, type: type}, key) when type in [:bag, :duplicate_bag] do
@@ -302,14 +303,14 @@ defmodule Exts.Dict do
   def keys(self) do
     case select(self, [{{ :'$1', :'$2' }, [], [:'$1'] }]) do
       nil -> []
-      s   -> s |> S.values
+      s   -> s.values
     end
   end
 
   def values(self) do
     case select(self, [{{ :'$1', :'$2' }, [], [:'$2'] }]) do
       nil -> []
-      s   -> s |> S.values
+      s   -> s.values
     end
   end
 
