@@ -325,9 +325,7 @@ defmodule Exts do
     values by calling `.next`.
     """
 
-    @opaque t :: record
-
-    defrecordp :selection, __MODULE__, values: [], continuation: nil, reverse: false
+    defstruct values: [], continuation: nil, reverse: false
 
     @doc """
     Get a Selection from the various select results.
@@ -339,8 +337,11 @@ defmodule Exts do
         []               -> nil
         { [], _ }        -> nil
 
-        { v, c } -> selection(values: v, continuation: c, reverse: reverse)
-        [_ | _]  -> selection(values: value, reverse: reverse)
+        { values, continuation } ->
+          %Selection{values: value, continuation: continuation, reverse: reverse}
+
+        [_ | _] ->
+          %Selection{values: value, reverse: reverse}
       end
     end
 
@@ -348,7 +349,7 @@ defmodule Exts do
     Check if the Selection is traversing in reverse.
     """
     @spec reverse?(t) :: boolean
-    def reverse?(selection(reverse: reverse)) do
+    def reverse?(%Selection{reverse: reverse}) do
       reverse
     end
 
@@ -356,8 +357,8 @@ defmodule Exts do
     Get the values in the current Selection.
     """
     @spec values(t) :: [any]
-    def values(selection(values: v)) do
-      v
+    def values(%Selection{values: values}) do
+      values
     end
 
     @doc """
@@ -365,33 +366,30 @@ defmodule Exts do
     there are no more.
     """
     @spec next(t) :: t | nil
-    def next(selection(continuation: nil)) do
+    def next(%Selection{continuation: nil}) do
       nil
     end
 
-    def next(selection(reverse: false, continuation: c)) do
-      new(:ets.select(c))
+    def next(%Selection{reverse: false, continuation: continuation}) do
+      new(:ets.select(continuation))
     end
 
-    def next(selection(reverse: true, continuation: c)) do
-      new(:ets.select_reverse(c), true)
+    def next(%Selection{reverse: true, continuation: continuation}) do
+      new(:ets.select_reverse(continuation), true)
     end
   end
 
   @doc """
   Select terms in the given table using a match_spec, see `ets:select`.
   """
-  @spec select(table, any) :: Selection.t | nil
-  def select(table, match_spec) do
+  @spec select(table, any, non_neg_integer) :: Selection.t | nil
+  def select(table, match_spec, options \\ [])
+
+  def select(table, match_spec, []) do
     Selection.new(:ets.select(table, match_spec))
   end
 
-  @doc """
-  Select terms in the given table using a match_spec passing a limit, see
-  `ets:select`.
-  """
-  @spec select(table, non_neg_integer, any) :: Selection.t | nil
-  def select(table, limit, match_spec) when is_integer limit do
+  def select(table, match_spec, limit: limit) do
     Selection.new(:ets.select(table, match_spec, limit))
   end
 
@@ -400,17 +398,14 @@ defmodule Exts do
   see `ets:select_reverse`.
   """
   @spec reverse_select(table, any) :: Selection.t | nil
-  def reverse_select(table, match_spec) do
+  def reverse_select(table, match_spec, options \\ [])
+
+  def reverse_select(table, match_spec, []) do
     Selection.new(:ets.select_reverse(table, match_spec), true)
   end
 
-  @doc """
-  Select terms in the given table using a match_spec passing a limit,
-  traversing in reverse, see `ets:select_reverse`.
-  """
-  @spec reverse_select(table, non_neg_integer, any) :: Selection.t | nil
-  def reverse_select(table, limit, match_spec) do
-    Selection.new(:ets.select_reverse(table, match_spec, limit), false)
+  def reverse_select(table, match_spec, limit: limit) do
+    Selection.new(:ets.select_reverse(table, match_spec, limit), true)
   end
 
   defmodule Match do
@@ -420,9 +415,7 @@ defmodule Exts do
     next set of values by calling `.next`.
     """
 
-    @opaque t :: record
-
-    defrecordp :match, __MODULE__, values: [], continuation: nil, whole: false
+    defstruct values: [], continuation: nil, whole: false
 
     @doc """
     Get a Match from the various match results.
@@ -433,8 +426,11 @@ defmodule Exts do
         []               -> nil
         { [], _ }        -> nil
 
-        { v, c } -> match(values: v, continuation: c, whole: whole)
-        [_ | _]  -> match(values: value, whole: whole)
+        { values, continuation } ->
+          %Match{values: values, continuation: continuation, whole: whole}
+
+        [_ | _] ->
+          %Match{values: value, whole: whole}
       end
     end
 
@@ -442,7 +438,7 @@ defmodule Exts do
     Check if the Match is matching whole objects.
     """
     @spec whole?(t) :: boolean
-    def whole?(match(whole: whole)) do
+    def whole?(%Match{whole: whole}) do
       whole
     end
 
@@ -450,8 +446,8 @@ defmodule Exts do
     Get the values in the current Match.
     """
     @spec values(t) :: [any]
-    def values(match(values: v)) do
-      v
+    def values(%Match{values: values}) do
+      values
     end
 
     @doc """
@@ -459,16 +455,16 @@ defmodule Exts do
     are no more.
     """
     @spec next(t) :: Match.t | nil
-    def next(match(continuation: nil)) do
+    def next(%Match{continuation: nil}) do
       nil
     end
 
-    def next(match(whole: true, continuation: c)) do
-      new(:ets.match_object(c))
+    def next(%Match{whole: true, continuation: continuation}) do
+      new(:ets.match_object(continuation))
     end
 
-    def next(match(whole: false, continuation: c)) do
-      new(:ets.match(c))
+    def next(%Match{whole: false, continuation: continuation}) do
+      new(:ets.match(continuation))
     end
   end
 
@@ -481,14 +477,15 @@ defmodule Exts do
   end
 
   @doc """
-  Match terms from the given table with the given pattern and options or
-  limit, see `ets:match`.
+  Match terms from the given table with the given pattern and options, see
+  `ets:match`.
 
   ## Options
 
   * `:whole` when true it returns the whole term.
   * `:delete` when true it deletes the matching terms instead of returning
     them.
+  * `:limit` the amount of elements to select at a time.
   """
   @spec match(table, any | integer, Keyword.t | any) :: Match.t | nil
   def match(table, pattern, delete: true) do
@@ -499,16 +496,11 @@ defmodule Exts do
     Match.new(:ets.match_object(table, pattern))
   end
 
-  def match(table, limit, pattern) when is_integer limit do
+  def match(table, pattern, limit: limit) do
     Match.new(:ets.match(table, pattern, limit))
   end
 
-  @doc """
-  Match term from the given table with the given pattern, options and limit,
-  see `ets:match_object`.
-  """
-  @spec match(table, integer, any, Keyword.t) :: Match.t | nil
-  def match(table, limit, pattern, whole: true) do
+  def match(table, pattern, limit: limit, whole: true) do
     Match.new(:ets.match_object(table, pattern, limit))
   end
 

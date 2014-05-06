@@ -3,29 +3,15 @@ defmodule Exts.Mixfile do
 
   def project do
     [ app: :exts,
-      version: "0.0.1",
-      elixir: "~> 0.12.3",
-      deps: deps ]
+      version: "0.1.0",
+      elixir: "~> 0.13.0",
+      package: package,
+      description: "ets wrapper for Elixir." ]
   end
 
-  # Configuration for the OTP application
-  def application do
-    if System.get_env("ELIXIR_NO_NIF") do
-      []
-    else
-      [ applications: [:finalizer],
-        mod: { Exts.Manager, [] } ]
-    end
-  end
-
-  # Returns the list of dependencies in the format:
-  # { :foobar, "0.1", git: "https://github.com/elixir-lang/foobar.git" }
-  defp deps do
-    if System.get_env("ELIXIR_NO_NIF") do
-      [ { :datastructures, github: "meh/elixir-datastructures" } ]
-    else
-      [ { :finalizer, github: "meh/elixir-finalizer" },
-        { :datastructures, github: "meh/elixir-datastructures" } ]
-    end
+  defp package do
+    [ contributors: ["meh"],
+      licenses: ["WTFPL"],
+      links: [ { "GitHub", "https://github.com/meh/exts" } ] ]
   end
 end
