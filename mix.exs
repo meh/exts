@@ -4,7 +4,7 @@ defmodule Exts.Mixfile do
   def project do
     [ app: :exts,
       version: "0.1.1-dev",
-      elixir: "~> 0.13.0",
+      elixir: "~> 0.13.2-dev",
       package: package,
       description: "ets wrapper for Elixir" ]
   end
