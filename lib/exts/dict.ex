@@ -393,7 +393,7 @@ defmodule Exts.Dict do
     end
 
     def count(table) do
-      { :ok, Exts.Dict.count(table) }
+      { :ok, Exts.Dict.size(table) }
     end
   end
 end
