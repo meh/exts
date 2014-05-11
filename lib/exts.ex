@@ -325,7 +325,7 @@ defmodule Exts do
         { [], _ }        -> nil
 
         { values, continuation } ->
-          %Selection{values: value, continuation: continuation, reverse: reverse}
+          %Selection{values: values, continuation: continuation, reverse: reverse}
 
         [_ | _] ->
           %Selection{values: value, reverse: reverse}
