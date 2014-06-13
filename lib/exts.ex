@@ -7,13 +7,15 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts do
-  defexception FileError, message: nil do
+  defmodule FileError do
     @moduledoc """
     Exception thrown if an error occurs on loading or dumping a table.
     """
 
+    defexception message: nil
+
     def exception(reason: { :file_error, path, :enoent }) do
-      FileError[message: to_string(path) <> " doesn't exist"]
+      %FileError{message: to_string(path) <> " doesn't exist"}
     end
   end
 
