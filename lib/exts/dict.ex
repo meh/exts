@@ -11,7 +11,7 @@ defmodule Exts.Dict do
 
   alias __MODULE__, as: T
 
-  use Dict.Behaviour
+  use Dict
 
   @doc """
   Create a new table with default options.
@@ -374,8 +374,13 @@ defmodule Exts.Dict do
   end
 
   defimpl Access do
-    def access(table, key) do
+    def get(table, key) do
       Dict.get(table, key)
+    end
+
+    def get_and_update(table, key, fun) do
+      { get, update } = fun.(Dict.get(table, key))
+      { get, Dict.put(table, key, update) }
     end
   end
 
