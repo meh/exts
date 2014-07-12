@@ -8,7 +8,7 @@
 
 defmodule Exts.Dict do
   defstruct [:id, :type]
-
+  @opaque t :: %Exts.Dict{}
   alias __MODULE__, as: T
 
   use Dict
@@ -298,7 +298,7 @@ defmodule Exts.Dict do
   @doc """
   Select terms in the table using a match_spec, see `ets:select`.
   """
-  @spec select(t, any, Keyword.t) :: [any]
+  @spec select(t, any, Keyword.t) :: Exts.Selection.t | nil
   def select(%T{id: id}, match_spec, options \\ []) do
     Exts.select(id, match_spec, options)
   end
@@ -307,7 +307,7 @@ defmodule Exts.Dict do
   Select terms in the table using a match_spec, traversing in reverse, see
   `ets:select_reverse`.
   """
-  @spec reverse_select(t, any) :: [any]
+  @spec reverse_select(t, any) :: Exts.Selection.t | nil
   def reverse_select(%T{id: id}, match_spec, options \\ []) do
     Exts.reverse_select(id, match_spec, options)
   end
@@ -315,7 +315,7 @@ defmodule Exts.Dict do
   @doc """
   Match terms from the table with the given pattern, see `ets:match`.
   """
-  @spec match(t, any) :: Match.t | nil
+  @spec match(t, any) :: Exts.Selection.t | nil
   def match(%T{id: id}, pattern, options \\ []) do
     Exts.match(id, pattern, options)
   end

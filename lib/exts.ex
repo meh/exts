@@ -307,19 +307,9 @@ defmodule Exts do
     [key | acc] |> do_keys(table, next(table, key))
   end
 
-  defmodule Selection do
-    @moduledoc """
-    Selection wraps an `ets:select` result, which may or may not contain a
-    continuation, in case of continuations you can access the next set of
-    values by calling `.next`.
-    """
-
+  defmodule Select do
     defstruct values: [], continuation: nil, reverse: false
 
-    @doc """
-    Get a Selection from the various select results.
-    """
-    @spec new(:'$end_of_table' | list | { list, any }) :: t | nil
     def new(value, reverse \\ false) do
       case value do
         :'$end_of_table' -> nil
@@ -327,72 +317,64 @@ defmodule Exts do
         { [], _ }        -> nil
 
         { values, continuation } ->
-          %Selection{values: values, continuation: continuation, reverse: reverse}
+          %Select{values: values, continuation: continuation, reverse: reverse}
 
         [_ | _] ->
-          %Selection{values: value, reverse: reverse}
+          %Select{values: value, reverse: reverse}
       end
     end
 
-    @doc """
-    Get the next set of values wrapped in another Selection, returns nil if
-    there are no more.
-    """
-    @spec next(t) :: t | nil
-    def next(%Selection{continuation: nil}) do
-      nil
-    end
+    defimpl Exts.Selection do
+      def next(%Select{continuation: nil}) do
+        nil
+      end
 
-    def next(%Selection{reverse: false, continuation: continuation}) do
-      new(:ets.select(continuation))
-    end
+      def next(%Select{reverse: false, continuation: continuation}) do
+        Select.new(:ets.select(continuation))
+      end
 
-    def next(%Selection{reverse: true, continuation: continuation}) do
-      new(:ets.select_reverse(continuation), true)
+      def next(%Select{reverse: true, continuation: continuation}) do
+        Select.new(:ets.select_reverse(continuation), true)
+      end
+
+      def values(%Select{values: values}) do
+        values
+      end
     end
   end
 
   @doc """
   Select terms in the given table using a match_spec, see `ets:select`.
   """
-  @spec select(table, any, non_neg_integer) :: Selection.t | nil
+  @spec select(table, any, non_neg_integer) :: Exts.Selection.t | nil
   def select(table, match_spec, options \\ [])
 
   def select(table, match_spec, []) do
-    Selection.new(:ets.select(table, match_spec))
+    Select.new(:ets.select(table, match_spec))
   end
 
   def select(table, match_spec, limit: limit) do
-    Selection.new(:ets.select(table, match_spec, limit))
+    Select.new(:ets.select(table, match_spec, limit))
   end
 
   @doc """
   Select terms in the given table using a match_spec, traversing in reverse,
   see `ets:select_reverse`.
   """
-  @spec reverse_select(table, any) :: Selection.t | nil
+  @spec reverse_select(table, any) :: Exts.Selection.t | nil
   def reverse_select(table, match_spec, options \\ [])
 
   def reverse_select(table, match_spec, []) do
-    Selection.new(:ets.select_reverse(table, match_spec), true)
+    Select.new(:ets.select_reverse(table, match_spec), true)
   end
 
   def reverse_select(table, match_spec, limit: limit) do
-    Selection.new(:ets.select_reverse(table, match_spec, limit), true)
+    Selecti.new(:ets.select_reverse(table, match_spec, limit), true)
   end
 
   defmodule Match do
-    @moduledoc """
-    Match wraps an `ets:match` or `ets:match_object` result, which may or may
-    not contain a continuation, in case of continuations you can access the
-    next set of values by calling `.next`.
-    """
-
     defstruct values: [], continuation: nil, whole: false
 
-    @doc """
-    Get a Match from the various match results.
-    """
     def new(value, whole \\ false) do
       case value do
         :'$end_of_table' -> nil
@@ -407,28 +389,29 @@ defmodule Exts do
       end
     end
 
-    @doc """
-    Get the next set of values wrapped in another Match, returns nil if there
-    are no more.
-    """
-    @spec next(t) :: Match.t | nil
-    def next(%Match{continuation: nil}) do
-      nil
-    end
+    defimpl Exts.Selection do
+      def next(%Match{continuation: nil}) do
+        nil
+      end
 
-    def next(%Match{whole: true, continuation: continuation}) do
-      new(:ets.match_object(continuation))
-    end
+      def next(%Match{whole: true, continuation: continuation}) do
+        Match.new(:ets.match_object(continuation))
+      end
 
-    def next(%Match{whole: false, continuation: continuation}) do
-      new(:ets.match(continuation))
+      def next(%Match{whole: false, continuation: continuation}) do
+        Match.new(:ets.match(continuation))
+      end
+
+      def values(%Match{values: values}) do
+        values
+      end
     end
   end
 
   @doc """
   Match terms from the given table with the given pattern, see `ets:match`.
   """
-  @spec match(table, any) :: Match.t | nil
+  @spec match(table, any) :: Exts.Selection.t | nil
   def match(table, pattern) do
     Match.new(:ets.match(table, pattern))
   end
@@ -444,7 +427,7 @@ defmodule Exts do
     them.
   * `:limit` the amount of elements to select at a time.
   """
-  @spec match(table, any | integer, Keyword.t | any) :: Match.t | nil
+  @spec match(table, any | integer, Keyword.t | any) :: Exts.Selection.t | nil
   def match(table, pattern, delete: true) do
     :ets.match_delete(table, pattern)
   end
