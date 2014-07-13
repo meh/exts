@@ -7,19 +7,12 @@
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 defmodule Exts do
-  defmodule FileError do
-    @moduledoc """
-    Exception thrown if an error occurs on loading or dumping a table.
-    """
-
-    defexception message: nil
-
-    def exception(reason: { :file_error, path, :enoent }) do
-      %FileError{message: to_string(path) <> " doesn't exist"}
-    end
-  end
-
   @type table :: integer | atom
+
+  alias Dexts.FileError
+  alias Dexts.Selection
+  alias Dexts.Select
+  alias Dexts.Match
 
   @doc """
   Load a table from the given file, see `ets:file2tab`.
@@ -307,46 +300,10 @@ defmodule Exts do
     [key | acc] |> do_keys(table, next(table, key))
   end
 
-  defmodule Select do
-    defstruct values: [], continuation: nil, reverse: false
-
-    def new(value, reverse \\ false) do
-      case value do
-        :'$end_of_table' -> nil
-        []               -> nil
-        { [], _ }        -> nil
-
-        { values, continuation } ->
-          %Select{values: values, continuation: continuation, reverse: reverse}
-
-        [_ | _] ->
-          %Select{values: value, reverse: reverse}
-      end
-    end
-
-    defimpl Exts.Selection do
-      def next(%Select{continuation: nil}) do
-        nil
-      end
-
-      def next(%Select{reverse: false, continuation: continuation}) do
-        Select.new(:ets.select(continuation))
-      end
-
-      def next(%Select{reverse: true, continuation: continuation}) do
-        Select.new(:ets.select_reverse(continuation), true)
-      end
-
-      def values(%Select{values: values}) do
-        values
-      end
-    end
-  end
-
   @doc """
   Select terms in the given table using a match_spec, see `ets:select`.
   """
-  @spec select(table, any, non_neg_integer) :: Exts.Selection.t | nil
+  @spec select(table, any, non_neg_integer) :: Selection.t | nil
   def select(table, match_spec, options \\ [])
 
   def select(table, match_spec, []) do
@@ -361,7 +318,7 @@ defmodule Exts do
   Select terms in the given table using a match_spec, traversing in reverse,
   see `ets:select_reverse`.
   """
-  @spec reverse_select(table, any) :: Exts.Selection.t | nil
+  @spec reverse_select(table, any) :: Selection.t | nil
   def reverse_select(table, match_spec, options \\ [])
 
   def reverse_select(table, match_spec, []) do
@@ -372,46 +329,10 @@ defmodule Exts do
     Selecti.new(:ets.select_reverse(table, match_spec, limit), true)
   end
 
-  defmodule Match do
-    defstruct values: [], continuation: nil, whole: false
-
-    def new(value, whole \\ false) do
-      case value do
-        :'$end_of_table' -> nil
-        []               -> nil
-        { [], _ }        -> nil
-
-        { values, continuation } ->
-          %Match{values: values, continuation: continuation, whole: whole}
-
-        [_ | _] ->
-          %Match{values: value, whole: whole}
-      end
-    end
-
-    defimpl Exts.Selection do
-      def next(%Match{continuation: nil}) do
-        nil
-      end
-
-      def next(%Match{whole: true, continuation: continuation}) do
-        Match.new(:ets.match_object(continuation))
-      end
-
-      def next(%Match{whole: false, continuation: continuation}) do
-        Match.new(:ets.match(continuation))
-      end
-
-      def values(%Match{values: values}) do
-        values
-      end
-    end
-  end
-
   @doc """
   Match terms from the given table with the given pattern, see `ets:match`.
   """
-  @spec match(table, any) :: Exts.Selection.t | nil
+  @spec match(table, any) :: Selection.t | nil
   def match(table, pattern) do
     Match.new(:ets.match(table, pattern))
   end
@@ -427,7 +348,7 @@ defmodule Exts do
     them.
   * `:limit` the amount of elements to select at a time.
   """
-  @spec match(table, any | integer, Keyword.t | any) :: Exts.Selection.t | nil
+  @spec match(table, any | integer, Keyword.t | any) :: Selection.t | nil
   def match(table, pattern, delete: true) do
     :ets.match_delete(table, pattern)
   end
