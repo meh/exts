@@ -316,7 +316,23 @@ defmodule Exts.Dict do
   Match terms from the table with the given pattern, see `ets:match`.
   """
   @spec match(t, any) :: Exts.Selection.t | nil
-  def match(%T{id: id}, pattern, options \\ []) do
+  def match(%T{id: id}, pattern) do
+    Exts.match(id, pattern)
+  end
+
+  @doc """
+  Match terms from the given table with the given pattern and options, see
+  `ets:match`.
+
+  ## Options
+
+  * `:whole` when true it returns the whole term.
+  * `:delete` when true it deletes the matching terms instead of returning
+    them.
+  * `:limit` the amount of elements to select at a time.
+  """
+  @spec match(t, any, Keyword.t) :: Exts.Selection.t | nil
+  def match(%T{id: id}, pattern, options) do
     Exts.match(id, pattern, options)
   end
 

@@ -9,10 +9,10 @@
 defmodule Exts do
   @type table :: integer | atom
 
-  alias Dexts.FileError
-  alias Dexts.Selection
-  alias Dexts.Select
-  alias Dexts.Match
+  alias Exts.FileError
+  alias Exts.Selection
+  alias Exts.Select
+  alias Exts.Match
 
   @doc """
   Load a table from the given file, see `ets:file2tab`.
