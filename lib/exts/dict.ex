@@ -386,25 +386,9 @@ defmodule Exts.Dict do
     reduce(table, next(table, key), fun.({ key, Data.Dict.get!(table, key) }, acc), fun)
   end
 
-  defimpl Enumerable do
-    def reduce(table, acc, fun) do
-      Exts.Dict.reduce(table, acc, fun)
-    end
+  alias Data.Protocol, as: P
 
-    def member?(table, { key, value }) do
-      { :ok, match?({ :ok, ^value }, Exts.Dict.fetch(table, key)) }
-    end
-
-    def member?(_, _) do
-      { :ok, false }
-    end
-
-    def count(table) do
-      { :ok, Exts.Dict.size(table) }
-    end
-  end
-
-  defimpl Data.Dictionary do
+  defimpl P.Dictionary do
     defdelegate fetch(self, key), to: Exts.Dict
     defdelegate put(self, key, value), to: Exts.Dict
     defdelegate delete(self, key), to: Exts.Dict
@@ -412,7 +396,7 @@ defmodule Exts.Dict do
     defdelegate values(self), to: Exts.Dict
   end
 
-  defimpl Data.Emptyable do
+  defimpl P.Empty do
     def empty?(self) do
       Exts.Dict.count(self) == 0
     end
@@ -420,21 +404,25 @@ defmodule Exts.Dict do
     defdelegate clear(self), to: Exts.Dict
   end
 
-  defimpl Data.Counted do
+  defimpl P.Count do
     defdelegate count(self), to: Exts.Dict
   end
 
-  defimpl Data.Reducible do
+  defimpl P.Reduce do
     defdelegate reduce(self, acc, fun), to: Exts.Dict
   end
 
-  defimpl Data.Listable do
+  defimpl P.ToList do
     defdelegate to_list(self), to: Exts.Dict
   end
 
-  defimpl Data.Contains do
+  defimpl P.Contains do
     def contains?(self, key) do
       match? { :ok, _ }, Exts.Dict.fetch(self, key)
     end
+  end
+
+  defimpl Enumerable do
+    use Data.Enumerable
   end
 end

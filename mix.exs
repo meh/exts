@@ -10,7 +10,7 @@ defmodule Exts.Mixfile do
   end
 
   defp deps do
-    [ { :datastructures, "~> 0.1" },
+    [ { :datastructures, "~> 0.2" },
       { :ex_doc, "~> 0.11", only: [:dev] } ]
   end
 
