@@ -9,9 +9,6 @@
 defmodule Exts.Dict do
   defstruct [:id, :type]
   @opaque t :: %Exts.Dict{}
-  alias __MODULE__, as: T
-
-  use Dict
 
   @doc """
   Create a new table with default options.
@@ -26,18 +23,18 @@ defmodule Exts.Dict do
   """
   @spec new(integer | atom | Keyword.t) :: t
   def new(options) when options |> is_list do
-    %T{id: Exts.new(options), type: options[:type] || :set}
+    %__MODULE__{id: Exts.new(options), type: options[:type] || :set}
   end
 
   def new(id) do
-    %T{id: id, type: :ets.info(id, :type)}
+    %__MODULE__{id: id, type: :ets.info(id, :type)}
   end
 
   @doc """
   Protect a table for safe iteration.
   """
   @spec protect(t) :: none
-  def protect(%T{id: id}) do
+  def protect(%__MODULE__{id: id}) do
     :ets.safe_fixtable(id, true)
   end
 
@@ -45,7 +42,7 @@ defmodule Exts.Dict do
   Unprotect a table from safe iteration.
   """
   @spec unprotect(t) :: none
-  def unprotect(%T{id: id}) do
+  def unprotect(%__MODULE__{id: id}) do
     :ets.safe_fixtable(id, false)
   end
 
@@ -53,7 +50,7 @@ defmodule Exts.Dict do
   Rename the table to the given atom, see `ets:rename`.
   """
   @spec rename(atom, t) :: atom
-  def rename(name, %T{id: id}) do
+  def rename(name, %__MODULE__{id: id}) do
     Exts.rename(id, name)
   end
 
@@ -63,7 +60,7 @@ defmodule Exts.Dict do
   """
   @spec give_to(t, pid) :: true
   @spec give_to(t, pid, any) :: true
-  def give_to(%T{id: id}, pid, data \\ nil) do
+  def give_to(%__MODULE__{id: id}, pid, data \\ nil) do
     Exts.give_to(id, pid, data)
   end
 
@@ -107,7 +104,7 @@ defmodule Exts.Dict do
   """
   @spec dump(String.t, t) :: :ok | { :error, any }
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
-  def dump(%T{id: id}, path, options \\ []) do
+  def dump(%__MODULE__{id: id}, path, options \\ []) do
     if is_binary(path) do
       path = String.from_char_list!(path)
     end
@@ -134,7 +131,7 @@ defmodule Exts.Dict do
   Check if the table is a bag.
   """
   @spec bag?(t) :: boolean
-  def bag?(%T{type: type}) do
+  def bag?(%__MODULE__{type: type}) do
     type == :bag
   end
 
@@ -142,7 +139,7 @@ defmodule Exts.Dict do
   Check if the table is a duplicate bag.
   """
   @spec duplicate_bag?(t) :: boolean
-  def duplicate_bag?(%T{type: type}) do
+  def duplicate_bag?(%__MODULE__{type: type}) do
     type == :duplicate_bag
   end
 
@@ -150,7 +147,7 @@ defmodule Exts.Dict do
   Check if the table is a set.
   """
   @spec set?(t) :: boolean
-  def set?(%T{type: type}) do
+  def set?(%__MODULE__{type: type}) do
     type == :set
   end
 
@@ -158,7 +155,7 @@ defmodule Exts.Dict do
   Check if the table is an ordered set.
   """
   @spec ordered_set?(t) :: boolean
-  def ordered_set?(%T{type: type}) do
+  def ordered_set?(%__MODULE__{type: type}) do
     type == :ordered_set
   end
 
@@ -166,7 +163,7 @@ defmodule Exts.Dict do
   Get info about the table, see `ets:info`.
   """
   @spec info(t) :: [any] | nil
-  def info(%T{id: id}) do
+  def info(%__MODULE__{id: id}) do
     Exts.info(id)
   end
 
@@ -174,11 +171,11 @@ defmodule Exts.Dict do
   Get info about the table, see `ets:info`.
   """
   @spec info(atom, t) :: any | nil
-  def info(%T{id: id}, key) do
+  def info(%__MODULE__{id: id}, key) do
     Exts.info(id, key)
   end
 
-  def size(%T{id: id}) do
+  def size(%__MODULE__{id: id}) do
     Exts.count(id)
   end
 
@@ -187,17 +184,17 @@ defmodule Exts.Dict do
   `ets:select_delete` and `ets:delete`.
   """
   @spec delete(t, any) :: true
-  def delete(%T{id: id}, key_or_pattern) do
+  def delete(%__MODULE__{id: id}, key_or_pattern) do
     Exts.delete(id, key_or_pattern)
   end
 
-  def put(%T{id: id} = self, key, value) do
+  def put(%__MODULE__{id: id} = self, key, value) do
     Exts.write id, { key, value }
 
     self
   end
 
-  def fetch(%T{id: id, type: type}, key) when type in [:bag, :duplicate_bag] do
+  def fetch(%__MODULE__{id: id, type: type}, key) when type in [:bag, :duplicate_bag] do
     case Exts.read(id, key) do
       [] ->
         :error
@@ -207,7 +204,7 @@ defmodule Exts.Dict do
     end
   end
 
-  def fetch(%T{id: id, type: type}, key) when type in [:set, :ordered_set] do
+  def fetch(%__MODULE__{id: id, type: type}, key) when type in [:set, :ordered_set] do
     case Exts.read(id, key) do
       [] ->
         :error
@@ -221,7 +218,7 @@ defmodule Exts.Dict do
   Convert the table to a list, see `ets:tab2list`.
   """
   @spec to_list(t) :: [term]
-  def to_list(%T{id: id}) do
+  def to_list(%__MODULE__{id: id}) do
     Exts.to_list(id)
   end
 
@@ -229,7 +226,7 @@ defmodule Exts.Dict do
   Clear the contents of the table, see `ets:delete_all_objects`.
   """
   @spec clear(t) :: true
-  def clear(%T{id: id}) do
+  def clear(%__MODULE__{id: id}) do
     Exts.clear(id)
   end
 
@@ -237,7 +234,7 @@ defmodule Exts.Dict do
   Destroy the table, see `ets:delete`.
   """
   @spec destroy(t) :: true
-  def destroy(%T{id: id}) do
+  def destroy(%__MODULE__{id: id}) do
     Exts.destroy(id)
   end
 
@@ -245,7 +242,7 @@ defmodule Exts.Dict do
   Read the terms in the given slot, see `ets:slot`.
   """
   @spec at(integer, t) :: [term]
-  def at(%T{id: id}, slot) do
+  def at(%__MODULE__{id: id}, slot) do
     Exts.at(id, slot)
   end
 
@@ -253,7 +250,7 @@ defmodule Exts.Dict do
   Get the first key in table, see `ets:first`.
   """
   @spec first(t) :: any
-  def first(%T{id: id}) do
+  def first(%__MODULE__{id: id}) do
     Exts.first(id)
   end
 
@@ -261,7 +258,7 @@ defmodule Exts.Dict do
   Get the next key in the table, see `ets:next`.
   """
   @spec next(any, t) :: any
-  def next(%T{id: id}, key) do
+  def next(%__MODULE__{id: id}, key) do
     Exts.next(id, key)
   end
 
@@ -269,7 +266,7 @@ defmodule Exts.Dict do
   Get the previous key in the table, see `ets:prev`.
   """
   @spec prev(any, t) :: any
-  def prev(%T{id: id}, key) do
+  def prev(%__MODULE__{id: id}, key) do
     Exts.prev(id, key)
   end
 
@@ -277,7 +274,7 @@ defmodule Exts.Dict do
   Get the last key in the table, see `ets:last`.
   """
   @spec last(t) :: any
-  def last(%T{id: id}) do
+  def last(%__MODULE__{id: id}) do
     Exts.last(id)
   end
 
@@ -299,7 +296,7 @@ defmodule Exts.Dict do
   Select terms in the table using a match_spec, see `ets:select`.
   """
   @spec select(t, any, Keyword.t) :: Exts.Selection.t | nil
-  def select(%T{id: id}, match_spec, options \\ []) do
+  def select(%__MODULE__{id: id}, match_spec, options \\ []) do
     Exts.select(id, match_spec, options)
   end
 
@@ -308,7 +305,7 @@ defmodule Exts.Dict do
   `ets:select_reverse`.
   """
   @spec reverse_select(t, any) :: Exts.Selection.t | nil
-  def reverse_select(%T{id: id}, match_spec, options \\ []) do
+  def reverse_select(%__MODULE__{id: id}, match_spec, options \\ []) do
     Exts.reverse_select(id, match_spec, options)
   end
 
@@ -316,7 +313,7 @@ defmodule Exts.Dict do
   Match terms from the table with the given pattern, see `ets:match`.
   """
   @spec match(t, any) :: Exts.Selection.t | nil
-  def match(%T{id: id}, pattern) do
+  def match(%__MODULE__{id: id}, pattern) do
     Exts.match(id, pattern)
   end
 
@@ -332,7 +329,7 @@ defmodule Exts.Dict do
   * `:limit` the amount of elements to select at a time.
   """
   @spec match(t, any, Keyword.t) :: Exts.Selection.t | nil
-  def match(%T{id: id}, pattern, options) do
+  def match(%__MODULE__{id: id}, pattern, options) do
     Exts.match(id, pattern, options)
   end
 
@@ -340,7 +337,7 @@ defmodule Exts.Dict do
   Get the number of terms in the table.
   """
   @spec count(t) :: non_neg_integer
-  def count(%T{id: id}) do
+  def count(%__MODULE__{id: id}) do
     Exts.count(id)
   end
 
@@ -348,7 +345,7 @@ defmodule Exts.Dict do
   Count the number of terms matching the match_spec, see `ets:select_count`.
   """
   @spec count(t, any) :: non_neg_integer
-  def count(%T{id: id}, spec) do
+  def count(%__MODULE__{id: id}, spec) do
     Exts.count(id, spec)
   end
 
@@ -356,7 +353,7 @@ defmodule Exts.Dict do
   Fold the table from the left, see `ets:foldl`.
   """
   @spec foldl(t, any, (term, any -> any)) :: any
-  def foldl(%T{id: id}, acc, fun) do
+  def foldl(%__MODULE__{id: id}, acc, fun) do
     Exts.foldl(id, acc, fun)
   end
 
@@ -364,7 +361,7 @@ defmodule Exts.Dict do
   Fold the table from the right, see `ets:foldr`.
   """
   @spec foldr(t, any, (term, any -> any)) :: any
-  def foldr(%T{id: id}, acc, fun) do
+  def foldr(%__MODULE__{id: id}, acc, fun) do
     Exts.foldr(id, acc, fun)
   end
 
@@ -386,7 +383,7 @@ defmodule Exts.Dict do
   end
 
   defp reduce(table, key, { :cont, acc }, fun) do
-    reduce(table, next(table, key), fun.({ key, fetch!(table, key) }, acc), fun)
+    reduce(table, next(table, key), fun.({ key, Data.Dict.get!(table, key) }, acc), fun)
   end
 
   defimpl Enumerable do
@@ -404,6 +401,40 @@ defmodule Exts.Dict do
 
     def count(table) do
       { :ok, Exts.Dict.size(table) }
+    end
+  end
+
+  defimpl Data.Dictionary do
+    defdelegate fetch(self, key), to: Exts.Dict
+    defdelegate put(self, key, value), to: Exts.Dict
+    defdelegate delete(self, key), to: Exts.Dict
+    defdelegate keys(self), to: Exts.Dict
+    defdelegate values(self), to: Exts.Dict
+  end
+
+  defimpl Data.Emptyable do
+    def empty?(self) do
+      Exts.Dict.count(self) == 0
+    end
+
+    defdelegate clear(self), to: Exts.Dict
+  end
+
+  defimpl Data.Counted do
+    defdelegate count(self), to: Exts.Dict
+  end
+
+  defimpl Data.Reducible do
+    defdelegate reduce(self, acc, fun), to: Exts.Dict
+  end
+
+  defimpl Data.Listable do
+    defdelegate to_list(self), to: Exts.Dict
+  end
+
+  defimpl Data.Contains do
+    def contains?(self, key) do
+      match? { :ok, _ }, Exts.Dict.fetch(self, key)
     end
   end
 end

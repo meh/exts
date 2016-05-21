@@ -1,3 +1,1 @@
-[ "datastructures": {:git, "git://github.com/meh/elixir-datastructures.git", "28a7aee9addfe521ad0aa62f5e54f1ad597356cc", []},
-  "finalizer": {:git, "git://github.com/meh/elixir-finalizer.git", "9c38d9145824a46c66f1a010e137a953a6c78e04", []},
-  "resource": {:git, "git://github.com/tonyrog/resource.git", "b9e1adcadcc8cb59130e0bbecbbe6777bb8d7c78", []} ]
+%{"datastructures": {:hex, :datastructures, "0.1.1", "a18e76184907b62e9f0ea3d79b97ae134092159a99f91c8d262e118baca91b83", [:mix], []}}
