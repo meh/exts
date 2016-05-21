@@ -389,17 +389,6 @@ defmodule Exts.Dict do
     reduce(table, next(table, key), fun.({ key, fetch!(table, key) }, acc), fun)
   end
 
-  defimpl Access do
-    def get(table, key) do
-      Dict.get(table, key)
-    end
-
-    def get_and_update(table, key, fun) do
-      { get, update } = fun.(Dict.get(table, key))
-      { get, Dict.put(table, key, update) }
-    end
-  end
-
   defimpl Enumerable do
     def reduce(table, acc, fun) do
       Exts.Dict.reduce(table, acc, fun)
