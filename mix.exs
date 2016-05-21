@@ -4,9 +4,9 @@ defmodule Exts.Mixfile do
   def project do
     [ app: :exts,
       version: "0.3.0",
-      package: package,
       deps:    deps,
-      description: "ets wrapper for Elixir" ]
+      package: package,
+      description: "ets wrapper" ]
   end
 
   defp deps do
@@ -15,7 +15,7 @@ defmodule Exts.Mixfile do
   end
 
   defp package do
-    [ contributors: ["meh"],
+    [ maintainers: ["meh"],
       licenses: ["WTFPL"],
       links: %{"GitHub" => "https://github.com/meh/exts"} ]
   end
