@@ -3,7 +3,7 @@ defmodule Exts.Mixfile do
 
   def project do
     [ app: :exts,
-      version: "0.3.0",
+      version: "0.3.1",
       deps:    deps,
       package: package,
       description: "ets wrapper" ]
