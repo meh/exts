@@ -20,7 +20,7 @@ defmodule Exts do
   @spec load(String.t) :: { :ok, table } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, table } | { :error, any }
   def load(path, options \\ []) when path |> is_binary do
-    :ets.file2tab(String.from_char_list!(path), options)
+    :ets.file2tab(List.to_string(path), options)
   end
 
   @doc """
@@ -45,7 +45,7 @@ defmodule Exts do
   @spec dump(table, String.t) :: :ok | { :error, any }
   @spec dump(table, String.t, Keyword.t) :: :ok | { :error, any }
   def dump(table, path, options \\ []) when path |> is_binary do
-    :ets.tab2file(table, String.from_char_list!(path), options)
+    :ets.tab2file(table, List.to_string(path), options)
   end
 
   @doc """
@@ -70,7 +70,7 @@ defmodule Exts do
   """
   @spec info(String.t | table) :: { :ok, any } | { :error, any } | Keyword.t | nil
   def info(path) when path |> is_binary do
-    :ets.tabfile_info(String.from_char_list!(path))
+    :ets.tabfile_info(List.to_string(path))
   end
 
   def info(table) do
@@ -150,50 +150,64 @@ defmodule Exts do
   """
   @spec new(atom, Keyword.t) :: table
   def new(name, options) do
-    args = []
+    options = options
+      |> Keyword.put(:name, name)
+      |> Keyword.put_new(:index, 0)
+      |> Keyword.put_new(:heir, nil)
+      |> Keyword.put_new(:compressed, false)
 
-    if name do
-      args = [:named_table | args]
-    end
+    :ets.new(name, Enum.flat_map(options, fn
+      { :name, nil } ->
+        []
 
-    args = [{ :keypos, (options[:index] || 0) + 1 } | args]
+      { :name, _ } ->
+        [:named_table]
 
-    args = case options[:concurrency] do
-      :both  -> [{ :write_concurrency, true  }, { :read_concurrency, true  } | args]
-      :write -> [{ :write_concurrency, true  }, { :read_concurrency, false } | args]
-      :read  -> [{ :write_concurrency, false }, { :read_concurrency, true  } | args]
+      { :index, value } ->
+        [{ :keypos, value + 1 }]
 
-      nil -> args
-    end
+      { :concurrency, :both } ->
+        [{ :write_concurrency, true }, { :read_concurrency, true }]
 
-    args = case options[:type] do
-      :set           -> [:set | args]
-      :ordered_set   -> [:ordered_set | args]
-      :bag           -> [:bag | args]
-      :duplicate_bag -> [:duplicate_bag | args]
+      { :concurrency, :write } ->
+        [{ :write_concurrency, true }, { :read_concurrency, false }]
 
-      nil -> args
-    end
+      { :concurrency, :read } ->
+        [{ :write_concurrency, false }, { :read_concurrency, true }]
 
-    args = case options[:access] do
-      :public    -> [:public | args]
-      :protected -> [:protected | args]
-      :private   -> [:private | args]
+      { :type, :set } ->
+        [:set]
 
-      nil -> args
-    end
+      { :type, :ordered_set } ->
+        [:ordered_set]
 
-    args = if options[:heir] do
-      [{ :heir, options[:heir][:pid], options[:heir][:data] } | args]
-    else
-      [{ :heir, :none } | args]
-    end
+      { :type, :bag } ->
+        [:bag]
 
-    if options[:compressed] do
-      args = [:compressed | args]
-    end
+      { :type, :duplicate_bag } ->
+        [:duplicate_bag]
 
-    :ets.new(name, args)
+      { :access, :public } ->
+        [:public]
+
+      { :access, :protected } ->
+        [:protected]
+
+      { :access, :private } ->
+        [:private]
+
+      { :heir, nil } ->
+        [{ :heir, :none }]
+
+      { :heir, value } ->
+        [{ :heir, value[:pid], value[:data] }]
+
+      { :compressed, true } ->
+        [:compressed]
+
+      { :compressed, false } ->
+        []
+    end))
   end
 
   @doc """
@@ -326,7 +340,7 @@ defmodule Exts do
   end
 
   def reverse_select(table, match_spec, limit: limit) do
-    Selecti.new(:ets.select_reverse(table, match_spec, limit), true)
+    Select.new(:ets.select_reverse(table, match_spec, limit), true)
   end
 
   @doc """

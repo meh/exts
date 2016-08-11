@@ -71,8 +71,10 @@ defmodule Exts.Dict do
   @spec load(String.t)            :: { :ok, t } | { :error, any }
   @spec load(String.t, Keyword.t) :: { :ok, t } | { :error, any }
   def load(path, options \\ []) do
-    if path |> is_binary do
-      path = String.from_char_list!(path)
+    path = if path |> is_binary do
+      List.to_string(path)
+    else
+      path
     end
 
     case :ets.file2tab(path, options) do
@@ -106,8 +108,10 @@ defmodule Exts.Dict do
   @spec dump(String.t, t) :: :ok | { :error, any }
   @spec dump(String.t, Keyword.t, t) :: :ok | { :error, any }
   def dump(%T{id: id}, path, options \\ []) do
-    if is_binary(path) do
-      path = String.from_char_list!(path)
+    path = if path |> is_binary do
+      List.to_string(path)
+    else
+      path
     end
 
     :ets.tab2file(id, path, options)
