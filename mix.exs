@@ -4,14 +4,14 @@ defmodule Exts.Mixfile do
   def project do
     [ app: :exts,
       version: "0.3.3",
-      deps:    deps,
-      package: package,
+      deps:    deps(),
+      package: package(),
       description: "ets wrapper" ]
   end
 
   defp deps do
     [ { :datastructures, "~> 0.2" },
-      { :ex_doc, "~> 0.11", only: [:dev] } ]
+      { :ex_doc,         "~> 0.14", only: [:dev] } ]
   end
 
   defp package do
