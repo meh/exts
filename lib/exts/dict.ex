@@ -390,27 +390,27 @@ defmodule Exts.Dict do
   alias Data.Protocol, as: P
 
   defimpl P.Dictionary do
-    defdelegate fetch(self, key), to: Exts.Dict
-    defdelegate put(self, key, value), to: Exts.Dict
-    defdelegate delete(self, key), to: Exts.Dict
-    defdelegate keys(self), to: Exts.Dict
-    defdelegate values(self), to: Exts.Dict
+    defdelegate fetch(self, key), to: T
+    defdelegate put(self, key, value), to: T
+    defdelegate delete(self, key), to: T
+    defdelegate keys(self), to: T
+    defdelegate values(self), to: T
   end
 
   defimpl P.Empty do
     def empty?(self) do
-      Exts.Dict.count(self) == 0
+      T.count(self) == 0
     end
 
-    defdelegate clear(self), to: Exts.Dict
+    defdelegate clear(self), to: T
   end
 
   defimpl P.Count do
-    defdelegate count(self), to: Exts.Dict
+    defdelegate count(self), to: T
   end
 
   defimpl P.Reduce do
-    defdelegate reduce(self, acc, fun), to: Exts.Dict
+    defdelegate reduce(self, acc, fun), to: T
   end
 
   defimpl P.ToSequence do
@@ -421,11 +421,21 @@ defmodule Exts.Dict do
 
   defimpl P.Contains do
     def contains?(self, key) do
-      match? { :ok, _ }, Exts.Dict.fetch(self, key)
+      match? { :ok, _ }, T.fetch(self, key)
+    end
+  end
+
+  defimpl P.Into do
+    def into(self, { key, value }) do
+      self |> T.put(key, value)
     end
   end
 
   defimpl Enumerable do
     use Data.Enumerable
+  end
+
+  defimpl Collectable do
+    use Data.Collectable
   end
 end
